@@ -1,0 +1,86 @@
+﻿@page "/"
+@if(persona == null)
+{
+	<button class="btn btn-primary" @onclick="Aggiungi">Inserisci</button>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Nome</th>
+				<th>Cognome</th>
+				<th>Età</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach(Persona persona in Persone)
+			{
+				<tr>
+					<td>@persona.Id</td>
+					<td>@persona.Nome</td>
+					<td>@persona.Cognome</td>
+					<td>@persona.Età</td>
+					<th><button class="btn btn-secondary" @onclick="x => Modifica(persona)">Modifica</button></th>
+					<th><button class="btn btn-danger" @onclick="x => Elimina(persona)">Elimina</button></th>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<EditForm Model="persona" OnSubmit="Salva">
+		<div class="form-group">
+			<label>Nome</label>
+			<InputText class="form-control" @bind-Value="@persona.Nome"></InputText>
+		</div>
+		<div class="form-group">
+			<label>Cognome</label>
+			<InputText class="form-control" @bind-Value="@persona.Cognome"></InputText>
+		</div>
+		<div class="form-group">
+			<label>Età</label>
+			<InputNumber class="form-control" @bind-Value="@persona.Età"></InputNumber>
+		</div>
+		<button class="btn btn-primary" type="submit">Inserisci</button>
+	</EditForm>
+}
+
+@code{
+	Persona? persona = null;
+	List<Persona> Persone = new List<Persona>(); 
+
+	public void Aggiungi()
+	{
+		persona = new Persona(); 
+		Console.WriteLine("Ciao"); 
+	}
+
+	public void Salva()
+	{
+		if(persona.Id == 0)
+		{
+			persona.Id = Persona.Totale; 
+			Persone.Add(persona);
+		}
+		else
+		{
+			Persona inModifica = Persone.FirstOrDefault(x => x.Id == persona.Id); 
+			inModifica.Nome = persona.Nome; 
+			inModifica.Cognome = persona.Cognome; 
+			inModifica.Età = persona.Età; 
+		}
+		persona = null; 
+	}
+
+	public void Elimina(Persona p)
+	{
+		Persone.Remove(p); 
+	}
+
+	public void Modifica(Persona p)
+	{
+		persona = p; 
+	}
+}

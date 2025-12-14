@@ -1,0 +1,220 @@
+﻿@page "/scheda"
+@page "/scheda/{IdPersonaggio:int}"
+@inject IPersonaggioService personaggioService
+@inject IAbilitàPersonaggioService abilitàPersonaggioService
+@inject IAbilitàService abilitàService
+
+<EditForm Model="@personaggio" OnSubmit="Salva">
+	<RadzenRow>
+		<RadzenColumn Size="12">
+			<RadzenFormField Text="Nome" Variant="Variant.Outlined" class="w-100">
+				<RadzenTextBox @bind-Value="@personaggio.Nome" class="w-100" />
+			</RadzenFormField>
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenFieldset Text="Modificatori" AllowCollapse="false" class="w-100">
+		<RadzenRow>
+			<RadzenColumn Size="6" SizeMD="3">
+				<RadzenFormField Text="Iniziativa" Variant="Variant.Outlined" class="w-100">
+					<RadzenTextBox @bind-Value="@personaggio.Iniziativa" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="6" SizeMD="3">
+				<RadzenFormField Text="Tiro per colpire" Variant="Variant.Outlined" class="w-100">
+					<RadzenTextBox @bind-Value="@personaggio.TiroColpire" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="6" SizeMD="3">
+				<RadzenFormField Text="Tiro difesa" Variant="Variant.Outlined" class="w-100">
+					<RadzenTextBox @bind-Value="@personaggio.TiroDifesa" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="6" SizeMD="3">
+				<RadzenFormField Text="Modificatore attacco" Variant="Variant.Outlined" class="w-100">
+					<RadzenTextBox @bind-Value="@personaggio.ModifAttacco" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+		</RadzenRow>
+	</RadzenFieldset>
+	<RadzenFieldset Text="Statistiche" AllowCollapse="false" class="w-100">
+		<RadzenRow>
+			<RadzenColumn Size="6" SizeMD="3">
+				<RadzenFormField Text="Salute" Variant="Variant.Outlined" class="w-100">
+					<RadzenNumeric @bind-Value="@personaggio.Salute" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="6" SizeMD="3">
+				<RadzenFormField Text="Vigore" Variant="Variant.Outlined" class="w-100">
+					<RadzenNumeric @bind-Value="@personaggio.Vigore" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="6" SizeMD="3">
+				<RadzenFormField Text="Armatura" Variant="Variant.Outlined" class="w-100">
+					<RadzenNumeric @bind-Value="@personaggio.Armatura" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="6" SizeMD="3">
+				<RadzenFormField Text="Livello minaccia" Variant="Variant.Outlined" class="w-100">
+					<RadzenNumeric @bind-Value="@personaggio.LivelloMinaccia" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+		</RadzenRow>
+	</RadzenFieldset>
+	<RadzenFieldset Text="Abilità e Debolezze" AllowCollapse="false" class="w-100">
+		<RadzenRow>
+			<RadzenColumn Size="12" SizeMD="4">
+				<RadzenFormField Text="Nome Abilità" Variant="Variant.Outlined" class="w-100">
+					<RadzenDropDown Data="@AbilitàTotali"
+					@bind-Value="@abilitàPersonaggio.AbilitàIdAbilità"
+					TextProperty="@(nameof(Abilità.Nome))"
+					ValueProperty="@(nameof(Abilità.IdAbilità))"
+					class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="12" SizeMD="4">
+				<RadzenFormField Text="Punteggio" Variant="Variant.Outlined" class="w-100">
+					<RadzenNumeric @bind-Value="@abilitàPersonaggio.Punteggio" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="12" SizeMD="4">
+				<RadzenButton Icon="add" ButtonStyle="ButtonStyle.Primary" @onclick="InserisciAbilità" class="w-100 h-100" />
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenRow>
+			<RadzenColumn Size="12" SizeMD="6">
+				<RadzenFieldset Text="Abilità" AllowCollapse="false" class="w-100">
+					@foreach (AbilitàTabella singola in abilitàTabella)
+					{
+						<RadzenRow>
+							<RadzenColumn Size="4">
+								<RadzenText class="w-100">@singola.NomeAbilità</RadzenText>
+							</RadzenColumn>
+							<RadzenColumn Size="4">
+								@if (!singola.Modifica)
+								{
+									<RadzenText class="w-100">@singola.Punteggio</RadzenText>
+								}
+								else
+								{
+									<RadzenNumeric class="w-100" @bind-Value="@abilitàPersonaggioModifica.Punteggio" />
+								}
+							</RadzenColumn>
+							<RadzenColumn Size="2">
+								@if (!singola.Modifica)
+								{
+									<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Warning" class="w-100 h-100" Click="x => Edita(singola)" />
+								}
+								else
+								{
+									<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" class="w-100 h-100" Click="SalvaAbilità" />
+								}
+							</RadzenColumn>
+						</RadzenRow>
+					}
+				</RadzenFieldset>
+			</RadzenColumn>
+
+			<RadzenColumn Size="12" SizeMD="6">
+				<RadzenFieldset Text="Debolezze" AllowCollapse="false" class="w-100">
+					<RadzenRow>
+						<RadzenColumn Size="4">
+							<RadzenText class="w-100">Nome</RadzenText>
+						</RadzenColumn>
+						<RadzenColumn Size="4">
+							<RadzenText class="w-100">Punteggio</RadzenText>
+						</RadzenColumn>
+						<RadzenColumn Size="2">
+							<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Warning" class="w-100 h-100" />
+						</RadzenColumn>
+					</RadzenRow>
+				</RadzenFieldset>
+			</RadzenColumn>
+		</RadzenRow>
+	</RadzenFieldset>
+</EditForm>
+
+@code {
+	[Parameter]
+	public int IdPersonaggio { get; set; } = 0;
+
+	Personaggio? personaggio = new Personaggio();
+	List<Abilità> AbilitàTotali = new List<Abilità>();
+	string titolo = "";
+
+	AbilitàPersonaggio abilitàPersonaggio = new AbilitàPersonaggio();
+	AbilitàPersonaggio abilitàPersonaggioModifica = new AbilitàPersonaggio();
+	List<AbilitàPersonaggio> AbilitàPersonaggioScelte = new List<AbilitàPersonaggio>();
+	List<AbilitàTabella> abilitàTabella = new List<AbilitàTabella>();
+	protected override async Task OnInitializedAsync()
+	{
+		titolo = "Nuovo personaggio";
+		AbilitàTotali = await abilitàService.GetAbilità();
+		if (IdPersonaggio != 0)
+		{
+			personaggio = await personaggioService.GetPersonaggioById(IdPersonaggio);
+			await CaricaAbilità();
+			titolo = "Modifica Personaggio";
+		}
+	}
+
+	private async Task CaricaAbilità()
+	{
+		AbilitàPersonaggioScelte = await abilitàPersonaggioService.GetAbilitàPersonaggioByPersonaggioId(IdPersonaggio);
+		abilitàTabella = AbilitàPersonaggioScelte.Select(CambiaAbilitàTabella).ToList();
+	}
+
+	private void Edita(AbilitàTabella singola)
+	{
+		singola.Modifica = true; 
+		abilitàPersonaggioModifica = AbilitàPersonaggioScelte.FirstOrDefault(x => x.AbilitàIdAbilità == singola.IdAbilità);
+	}
+
+	private async Task Salva()
+	{
+		await personaggioService.SalvaPersonaggio(personaggio);
+		AbilitàPersonaggioScelte.Select(CambiaAbilità);
+		foreach (AbilitàPersonaggio singola in AbilitàPersonaggioScelte)
+		{
+			await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio);
+		}
+	}
+
+	private async Task SalvaAbilità()
+	{
+		
+	}
+
+	public void InserisciAbilità()
+	{
+		AbilitàPersonaggioScelte.Add(abilitàPersonaggio);
+		abilitàPersonaggio = new AbilitàPersonaggio();
+	}
+
+	public AbilitàPersonaggio CambiaAbilità(AbilitàPersonaggio quale)
+	{
+		if (quale.PersonaggioId == 0)
+		{
+			quale.PersonaggioId = personaggio.Id;
+		}
+		return quale;
+	}
+
+	public AbilitàTabella CambiaAbilitàTabella(AbilitàPersonaggio quale)
+	{
+		string nome = AbilitàTotali.FirstOrDefault(x => x.IdAbilità == quale.AbilitàIdAbilità).Nome;
+		return new AbilitàTabella()
+			{
+				IdAbilità = quale.AbilitàIdAbilità; 
+				NomeAbilità = nome,
+				Punteggio = quale.Punteggio
+			};
+	}
+
+	public class AbilitàTabella
+	{
+		public int IdAbilità { get; set; }
+		public string NomeAbilità { get; set; }
+		public int Punteggio { get; set; }
+		public bool Modifica { get; set; } = false; 
+	}
+}

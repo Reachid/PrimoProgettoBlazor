@@ -1,10 +1,23 @@
+using Microsoft.EntityFrameworkCore;
 using PrimoProgettoBlazor.Components;
+using PrimoProgettoBlazor.Components.Classi;
+using PrimoProgettoBlazor.Servizi.Classi;
+using PrimoProgettoBlazor.Servizi.Interfacce;
+using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddRadzenComponents();
+
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<BancaDati>(x => x.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+
+builder.Services.AddScoped<IPersonaggioService,PersonaggioService>(); 
+builder.Services.AddScoped<IAbilitàPersonaggioService,AbilitàPersonaggioService>(); 
+builder.Services.AddScoped<IAbilitàService,AbilitàService>(); 
 
 var app = builder.Build();
 

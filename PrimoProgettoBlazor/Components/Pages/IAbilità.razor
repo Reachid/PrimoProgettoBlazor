@@ -1,0 +1,105 @@
+﻿@page "/Abilita"
+@inject IAbilitàService abilitàService
+@inject DialogService dialog
+@inject NotificationService notify
+
+<RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="add" Click="x => Modifica(new Abilità())" />
+@if (inModifica == null)
+{
+	<RadzenRow>
+		@foreach (Abilità singola in Abilità)
+		{
+			<RadzenColumn SizeMD="6" Size="12">
+				<RadzenCard>
+					<RadzenRow>
+						<RadzenColumn Size="12">
+							<RadzenText TextAlign="TextAlign.Center" Text="@singola.Nome" />
+						</RadzenColumn>
+					</RadzenRow>
+					<RadzenRow>
+						<RadzenColumn Size="6">
+							<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => Elimina(singola)" class="w-100" />
+						</RadzenColumn>
+						<RadzenColumn Size="6">
+							<RadzenButton ButtonStyle="ButtonStyle.Warning" Icon="edit" Click="x => Modifica(singola)" class="w-100" />
+						</RadzenColumn>
+					</RadzenRow>
+				</RadzenCard>
+			</RadzenColumn>
+		}
+	</RadzenRow>
+}
+else
+{
+	<EditForm Model="Abilità" OnSubmit="Salva">
+		<RadzenRow>
+			<RadzenColumn Size="6">
+				<RadzenFormField Text="Nome" class="w-100">
+					<RadzenTextBox @bind-Value="@inModifica.Nome" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="6">
+				<RadzenSwitch @bind-Value="@inModifica.IsAbilità" />
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenRow>
+			<RadzenColumn Size="12">
+				<RadzenFormField Text="Descrizione" class="w-100">
+					<RadzenTextArea @bind-Value="@inModifica.Descrizione" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenButton Icon="check" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" />
+	</EditForm>
+}
+
+
+@code {
+	List<Abilità> Abilità = new List<Abilità>();
+	Abilità? inModifica = null;
+	protected override async Task OnInitializedAsync()
+	{
+		await Carica();
+	}
+
+	private async Task Carica()
+	{
+		Abilità = await abilitàService.GetAbilità();
+	}
+
+	private void Modifica(Abilità quale)
+	{
+		inModifica = quale;
+	}
+
+	private async Task Salva()
+	{
+		string errore = await abilitàService.SalvaAbilità(inModifica);
+		MostraErrore(errore, "Inserimento riuscito");
+		inModifica = null;
+		await Carica(); 
+	}
+
+	private async Task Elimina(Abilità quale)
+	{
+		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa abilità?", "Eliminazione abilità", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
+		if (result.HasValue && result.Value)
+		{
+			string errore = await abilitàService.EliminaAbilità(quale);
+			MostraErrore(errore, "Elinimazione riuscita!");
+			await Carica();
+		}
+	}
+
+	private void MostraErrore(string errore, string messaggioDiRiuscita)
+	{
+		if (string.IsNullOrEmpty(errore))
+		{
+			notify.Notify(NotificationSeverity.Success, messaggioDiRiuscita);
+		}
+		else
+		{
+			notify.Notify(NotificationSeverity.Error, errore);
+		}
+	}
+}

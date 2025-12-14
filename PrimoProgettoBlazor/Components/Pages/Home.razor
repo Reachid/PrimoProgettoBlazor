@@ -1,6 +1,7 @@
 ﻿@page "/"
+@inject NavigationManager navman
 
-<RadzenButton Icon="add"  ButtonStyle="ButtonStyle.Primary"></RadzenButton>
+<RadzenButton Icon="add"  ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda()"></RadzenButton>
 <RadzenRow>
     <RadzenColumn>
         <RadzenCard>
@@ -19,4 +20,9 @@
 
 @code {
     List<Personaggio> Personaggi = new List<Personaggio>(); 
+
+    private void ApriScheda(int personaggioId = 0)
+    {
+        navman.NavigateTo($"/scheda/{personaggioId}"); 
+    }
 }

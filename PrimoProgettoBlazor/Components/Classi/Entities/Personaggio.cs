@@ -17,8 +17,8 @@ namespace PrimoProgettoBlazor.Components.Classi.Entities
         public int Armatura { get; set; }
         public int LivelloMinaccia { get; set; }
         public Giocatore Giocatore { get; set; }
-        public ICollection<AbilitàPersonaggio> Abilità { get; set; }
-        public ICollection<Attacco> Attacchi { get; set; }
-        public Sessione Sessione { get; set; }
+        public ICollection<AbilitàPersonaggio> Abilità { get; set; } = new List<AbilitàPersonaggio>(); 
+        public ICollection<Attacco> Attacchi { get; set; } = new List<Attacco>();
+        public Sessione Sessione { get; set; } = new Sessione();
     }
 }

@@ -12,5 +12,7 @@ namespace PrimoProgettoBlazor.Components.Classi.Entities
         public Personaggio Personaggio { get; set; }
         public int PersonaggioId { get; set; }
         public int Punteggio {  get; set; }
+        [NotMapped]
+        public bool Modifica { get; set; }  
     }
 }

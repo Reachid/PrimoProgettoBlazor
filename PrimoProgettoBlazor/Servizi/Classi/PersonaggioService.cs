@@ -54,7 +54,11 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             {
                 using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    Personaggio = await db.Personaggi.Where(x => x.Id == idPersonaggio).FirstOrDefaultAsync(); 
+                    Personaggio = await db.Personaggi.Include(ap => ap.Abilità)
+                                                     .ThenInclude(x => x.Abilità)
+                                                     .Include(at => at.Attacchi)
+                                                     .Where(x => x.Id == idPersonaggio)
+                                                     .FirstOrDefaultAsync(); 
                 }
             }
             return Personaggio;

@@ -1,0 +1,43 @@
+﻿<RadzenFieldset Text="@Titolo" AllowCollapse="false" class="w-100">
+	@foreach (AbilitàPersonaggio singola in Abilità.Where(x => x.Abilità.IsAbilità == IsAbilità))
+	{
+		<RadzenRow>
+			<RadzenColumn Size="4">
+				<RadzenText class="w-100">@singola.Abilità.Nome</RadzenText>
+			</RadzenColumn>
+			<RadzenColumn Size="4">
+				@if (!singola.Modifica)
+				{
+					<RadzenText class="w-100">@singola.Punteggio</RadzenText>
+				}
+				else
+				{
+					<RadzenNumeric class="w-100" @bind-Value="@singola.Punteggio" />
+				}
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				@if (!singola.Modifica)
+				{
+					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Warning" class="w-100 h-100" Click="x => singola.Modifica = true" />
+				}
+				else
+				{
+					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" class="w-100 h-100" Click="x => singola.Modifica = false" />
+				}
+			</RadzenColumn>
+		</RadzenRow>
+	}
+</RadzenFieldset>
+
+@code {
+	[Parameter] public string Titolo { get; set; }
+	[Parameter] public ICollection<AbilitàPersonaggio> Abilità { get; set; }
+	[Parameter] public EventCallback<ICollection<AbilitàPersonaggio>> AbilitàChanged { get; set; }
+	[Parameter] public bool IsAbilità { get; set; } = true; 
+
+	private async Task ChangePunteggio(AbilitàPersonaggio abilitàPersonaggio, int punteggioNuovo)
+	{
+		abilitàPersonaggio.Punteggio = punteggioNuovo; 
+		await AbilitàChanged.InvokeAsync(Abilità); 
+	}
+}

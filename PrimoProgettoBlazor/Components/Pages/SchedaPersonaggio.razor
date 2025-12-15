@@ -3,6 +3,8 @@
 @inject IPersonaggioService personaggioService
 @inject IAbilitàPersonaggioService abilitàPersonaggioService
 @inject IAbilitàService abilitàService
+@inject DialogService dialog
+@inject NotificationService notify
 
 <EditForm Model="@personaggio" OnSubmit="Salva">
 	<RadzenRow>
@@ -81,11 +83,11 @@
 		</RadzenRow>
 		<RadzenRow>
 			<RadzenColumn Size="12" SizeMD="6">
-				<SchermataAbilità Titolo="Abilità" @bind-Abilità="personaggio.Abilità" IsAbilità="true" />
+				<SchermataAbilità Titolo="Abilità" @bind-Abilità="personaggio.Abilità" IsAbilità="true" EliminaAbilitàPersonaggio="EliminaAbilità" />
 			</RadzenColumn>
 
 			<RadzenColumn Size="12" SizeMD="6">
-				<SchermataAbilità Titolo="Debolezze" @bind-Abilità="personaggio.Abilità" IsAbilità="false" />
+				<SchermataAbilità Titolo="Debolezze" @bind-Abilità="personaggio.Abilità" IsAbilità="false" EliminaAbilitàPersonaggio="EliminaAbilità" />
 			</RadzenColumn>
 		</RadzenRow>
 	</RadzenFieldset>
@@ -125,6 +127,16 @@
 	private async Task Salva()
 	{
 		await personaggioService.SalvaPersonaggio(personaggio);
+	}
+
+	private async Task EliminaAbilità(AbilitàPersonaggio quale)
+	{
+		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa abilità?", "Eliminazione abilità", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
+		if (result.HasValue && result.Value)
+		{
+			personaggio.Abilità.Remove(quale); 
+			notify.Notify(new NotificationMessage() {Severity = NotificationSeverity.Success, Summary ="Abilità eliminata!"}); 
+		}
 	}
 
 	public void InserisciAbilità()

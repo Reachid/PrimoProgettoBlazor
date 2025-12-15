@@ -1,4 +1,5 @@
-﻿<RadzenFieldset Text="@Titolo" AllowCollapse="false" class="w-100">
+﻿@inject DialogService dialog
+<RadzenFieldset Text="@Titolo" AllowCollapse="@Collapsable" class="w-100">
 	@foreach (AbilitàPersonaggio singola in Abilità.Where(x => x.Abilità.IsAbilità == IsAbilità))
 	{
 		<RadzenRow>
@@ -25,6 +26,12 @@
 					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" class="w-100 h-100" Click="x => singola.Modifica = false" />
 				}
 			</RadzenColumn>
+			<RadzenColumn Size="1">
+				<RadzenButton Icon="menu" ButtonStyle="ButtonStyle.Primary" Click="x => VisualizzaDescrizione(singola.Abilità)" class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="1">
+				<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="x => EliminaAbilità(singola)" class="w-100" />
+			</RadzenColumn>
 		</RadzenRow>
 	}
 </RadzenFieldset>
@@ -34,10 +41,33 @@
 	[Parameter] public ICollection<AbilitàPersonaggio> Abilità { get; set; }
 	[Parameter] public EventCallback<ICollection<AbilitàPersonaggio>> AbilitàChanged { get; set; }
 	[Parameter] public bool IsAbilità { get; set; } = true; 
+	[Parameter] public bool Collapsable { get; set; } = true; 
+	[Parameter] public EventCallback<AbilitàPersonaggio> EliminaAbilitàPersonaggio { get; set; }
 
 	private async Task ChangePunteggio(AbilitàPersonaggio abilitàPersonaggio, int punteggioNuovo)
 	{
 		abilitàPersonaggio.Punteggio = punteggioNuovo; 
 		await AbilitàChanged.InvokeAsync(Abilità); 
+	}
+
+	private async Task VisualizzaDescrizione(Abilità abilità)
+	{
+		await dialog.OpenAsync<SchedaAbilità>(abilità.Nome, new Dictionary<string, object>()
+		{
+			{"Abilità", abilità}
+		}, new DialogOptions()
+		{
+			Width = "100vw",
+			Height = "100vh", 
+			ShowClose = true
+		});
+	}
+
+	private async Task EliminaAbilità(AbilitàPersonaggio quale)
+	{
+		if (EliminaAbilitàPersonaggio.HasDelegate)
+		{
+			await EliminaAbilitàPersonaggio.InvokeAsync(quale); 
+		}
 	}
 }

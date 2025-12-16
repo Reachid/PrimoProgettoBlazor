@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PrimoProgettoBlazor.Components.Classi;
 
@@ -10,9 +11,11 @@ using PrimoProgettoBlazor.Components.Classi;
 namespace PrimoProgettoBlazor.Migrations
 {
     [DbContext(typeof(BancaDati))]
-    partial class BancaDatiModelSnapshot : ModelSnapshot
+    [Migration("20251216210332_terza")]
+    partial class terza
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,9 +105,6 @@ namespace PrimoProgettoBlazor.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Nome")
                         .IsRequired()

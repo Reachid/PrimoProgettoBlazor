@@ -1,12 +1,12 @@
-﻿@page "/Abilita"
-@inject IAbilitàService abilitàService
+﻿@page "/Giocatori"
+@inject IGiocatoreService giocatoreService
 @inject DialogService dialog
 @inject NotificationService notify
 
 @if (inModifica == null)
 {
 	<RadzenRow>
-		@foreach (Abilità singola in Abilità)
+		@foreach (Giocatore singola in Giocatori)
 		{
 			<RadzenColumn SizeMD="6" Size="12">
 				<RadzenCard>
@@ -22,30 +22,30 @@
 						<RadzenColumn Size="6">
 							<RadzenButton ButtonStyle="ButtonStyle.Warning" Icon="edit" Click="x => Modifica(singola)" class="w-100" />
 						</RadzenColumn>
+						<RadzenColumn Size="12">
+							@{
+								string testo = "Non Admin";
+								if (singola.IsAdmin)
+								{
+									testo = "Admin";
+								}
+								<RadzenButton ButtonStyle="ButtonStyle.Secondary" Text="@testo" Click="x => ImpostaAdmin(singola)" class="w-100" />
+							}
+						</RadzenColumn>
 					</RadzenRow>
 				</RadzenCard>
 			</RadzenColumn>
 		}
 	</RadzenRow>
-	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="add" Click="x => Modifica(new Abilità())" />
+	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="add" Click="x => Modifica(new Giocatore())" />
 }
 else
 {
-	<EditForm Model="Abilità" OnSubmit="Salva">
+	<EditForm Model="Giocatori" OnSubmit="x => Salva(inModifica)">
 		<RadzenRow>
 			<RadzenColumn Size="6">
 				<RadzenFormField Text="Nome" class="w-100">
 					<RadzenTextBox @bind-Value="@inModifica.Nome" class="w-100" />
-				</RadzenFormField>
-			</RadzenColumn>
-			<RadzenColumn Size="6">
-				<RadzenSwitch @bind-Value="@inModifica.IsAbilità" />
-			</RadzenColumn>
-		</RadzenRow>
-		<RadzenRow>
-			<RadzenColumn Size="12">
-				<RadzenFormField Text="Descrizione" class="w-100">
-					<RadzenTextArea @bind-Value="@inModifica.Descrizione" class="w-100" />
 				</RadzenFormField>
 			</RadzenColumn>
 		</RadzenRow>
@@ -55,8 +55,8 @@ else
 
 
 @code {
-	List<Abilità> Abilità = new List<Abilità>();
-	Abilità? inModifica = null;
+	List<Giocatore> Giocatori = new List<Giocatore>();
+	Giocatore? inModifica = null;
 	protected override async Task OnInitializedAsync()
 	{
 		await Carica();
@@ -64,31 +64,42 @@ else
 
 	private async Task Carica()
 	{
-		Abilità = await abilitàService.GetAbilità();
+		Giocatori = await giocatoreService.GetGiocatori();
 	}
 
-	private void Modifica(Abilità quale)
+	private void Modifica(Giocatore quale)
 	{
 		inModifica = quale;
 	}
 
-	private async Task Salva()
+	private async Task Salva(Giocatore giocatore)
 	{
-		string errore = await abilitàService.SalvaAbilità(inModifica);
-		MostraErrore(errore, "Inserimento riuscito");
+		string errore = await giocatoreService.SalvaGiocatore(giocatore);
+		string testo = "Modifica riuscita";
+		if (giocatore.Id == 0)
+		{
+			testo = "Inserimento riuscito";
+		}
+		MostraErrore(errore, testo);
 		inModifica = null;
-		await Carica(); 
+		await Carica();
 	}
 
-	private async Task Elimina(Abilità quale)
+	private async Task Elimina(Giocatore quale)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa abilità?", "Eliminazione abilità", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
+		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa sessione?", "Eliminazione sessione", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
 		if (result.HasValue && result.Value)
 		{
-			string errore = await abilitàService.EliminaAbilità(quale);
+			string errore = await giocatoreService.EliminaGiocatore(quale);
 			MostraErrore(errore, "Elinimazione riuscita!");
 			await Carica();
 		}
+	}
+
+	private async Task ImpostaAdmin(Giocatore giocatore)
+	{
+		giocatore.IsAdmin = !giocatore.IsAdmin;
+		await Salva(giocatore);
 	}
 
 	private void MostraErrore(string errore, string messaggioDiRiuscita)

@@ -1,45 +1,63 @@
 ﻿@page "/"
 @inject NavigationManager navman
+@inject IPersonaggioService personaggioService
 
-<RadzenRow>
-    @foreach(Personaggio personaggio in giocatore.Personaggi)
-    {
-        <RadzenColumn Size="6">
-            <RadzenCard>
-                <RadzenRow>
-                    <RadzenText>@personaggio.Nome</RadzenText>
-                    <RadzenText>@personaggio.Sessione.Nome</RadzenText>
-                </RadzenRow>
-                <RadzenRow>
-                    <RadzenColumn>
-                        <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="edit" Click="x => ApriScheda(personaggio.Id)" />
-                    </RadzenColumn>
-                    <RadzenColumn>
-                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => EliminaPersonaggio(personaggio)" />
-                    </RadzenColumn>
-                </RadzenRow>
-            </RadzenCard>
-        </RadzenColumn>
-    }
-</RadzenRow>
-<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda()" Icon="add" />
+@if(personaggio == null)
+{
+    <RadzenRow>
+        @foreach (Personaggio personaggio in giocatore.Personaggi)
+        {
+            <RadzenColumn Size="6">
+                <RadzenCard>
+                    <RadzenRow>
+                        <RadzenText>@personaggio.Nome</RadzenText>
+                        <RadzenText>@personaggio.Sessione.Nome</RadzenText>
+                    </RadzenRow>
+                    <RadzenRow>
+                        <RadzenColumn>
+                            <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="edit" Click="x => ApriScheda(personaggio)" />
+                        </RadzenColumn>
+                        <RadzenColumn>
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => EliminaPersonaggio(personaggio)" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenCard>
+            </RadzenColumn>
+        }
+    </RadzenRow>
+    <RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda(new Personaggio())" Icon="add" />
+}
+else
+{
+    <SchedaPersonaggio personaggio="personaggio" OnSalva="ResettaPersonaggio" />
+}
+
 
 
 @code {
     List<Personaggio> Personaggi = new List<Personaggio>();
     Giocatore giocatore = new Giocatore();
-    protected override void OnInitialized()
+
+    Personaggio? personaggio = null; 
+    protected override async Task OnInitializedAsync()
     {
         giocatore = new Giocatore();
+        giocatore.Personaggi = await personaggioService.GetPersonaggi(); 
     }
 
-    private void ApriScheda(int personaggioId = 0)
+    private void ApriScheda(Personaggio quale)
     {
-        navman.NavigateTo($"/scheda/{personaggioId}"); 
+        //Qui ci dev'essere del codice che fa in modo di assegnare la sessione al nuovo personaggio, se non ne ha già una
+        personaggio = quale; 
     }
 
-    private void EliminaPersonaggio(Personaggio personaggio)
+    private void ResettaPersonaggio()
     {
-        
+        personaggio = null; 
+    }
+
+    private async Task EliminaPersonaggio(Personaggio personaggio)
+    {
+        await personaggioService.EliminaPersonaggio(personaggio); 
     }
 }

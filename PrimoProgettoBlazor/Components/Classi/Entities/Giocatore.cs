@@ -7,6 +7,6 @@ namespace PrimoProgettoBlazor.Components.Classi.Entities
         [Key]
         public int Id { get; set; }
         public string Nome { get; set; }
-        public ICollection<Personaggio> Personaggi { get; set; }
+        public ICollection<Personaggio> Personaggi { get; set; } = new List<Personaggio>();
     }
 }

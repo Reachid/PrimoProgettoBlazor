@@ -1,28 +1,45 @@
 ﻿@page "/"
 @inject NavigationManager navman
 
-<RadzenButton Icon="add"  ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda()"></RadzenButton>
 <RadzenRow>
-    <RadzenColumn>
-        <RadzenCard>
-            <RadzenText>Nome</RadzenText>
-            <RadzenText>Gioco</RadzenText>
-        </RadzenCard>
-    </RadzenColumn>
-    <RadzenColumn>
-        <RadzenCard>
-            <RadzenText>Nome</RadzenText>
-            <RadzenText>Gioco</RadzenText>
-        </RadzenCard>
-    </RadzenColumn>
+    @foreach(Personaggio personaggio in giocatore.Personaggi)
+    {
+        <RadzenColumn Size="6">
+            <RadzenCard>
+                <RadzenRow>
+                    <RadzenText>@personaggio.Nome</RadzenText>
+                    <RadzenText>@personaggio.Sessione.Nome</RadzenText>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn>
+                        <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="edit" Click="x => ApriScheda(personaggio.Id)" />
+                    </RadzenColumn>
+                    <RadzenColumn>
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => EliminaPersonaggio(personaggio)" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenCard>
+        </RadzenColumn>
+    }
 </RadzenRow>
+<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda()" Icon="add" />
 
 
 @code {
-    List<Personaggio> Personaggi = new List<Personaggio>(); 
+    List<Personaggio> Personaggi = new List<Personaggio>();
+    Giocatore giocatore = new Giocatore();
+    protected override void OnInitialized()
+    {
+        giocatore = new Giocatore();
+    }
 
     private void ApriScheda(int personaggioId = 0)
     {
         navman.NavigateTo($"/scheda/{personaggioId}"); 
+    }
+
+    private void EliminaPersonaggio(Personaggio personaggio)
+    {
+        
     }
 }

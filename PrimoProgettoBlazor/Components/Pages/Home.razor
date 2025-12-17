@@ -36,14 +36,10 @@ else
 
 @code {
     List<Personaggio> Personaggi = new List<Personaggio>();
-    Giocatore giocatore = new Giocatore();
+    [CascadingParameter]
+    public Giocatore giocatore { get; set; } = new Giocatore();
 
     Personaggio? personaggio = null; 
-    protected override async Task OnInitializedAsync()
-    {
-        giocatore = new Giocatore();
-        giocatore.Personaggi = await personaggioService.GetPersonaggi(); 
-    }
 
     private void ApriScheda(Personaggio quale)
     {

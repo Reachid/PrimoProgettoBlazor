@@ -7,6 +7,7 @@ namespace PrimoProgettoBlazor.Servizi.Interfacce
         public Task<List<Giocatore>> GetGiocatori();
         public Task<Giocatore> GetGiocatoreByName(string nome);
         public Task<string> SalvaGiocatore(Giocatore giocatore);
-        public Task<string> EliminaGiocatore(Giocatore giocatore); 
+        public Task<string> EliminaGiocatore(Giocatore giocatore);
+        public Task<Giocatore?> GetGiocatoreById(int idGiocatore); 
     }
 }

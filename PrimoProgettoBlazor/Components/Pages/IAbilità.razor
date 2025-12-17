@@ -15,19 +15,25 @@
 							<RadzenText TextAlign="TextAlign.Center" Text="@singola.Nome" />
 						</RadzenColumn>
 					</RadzenRow>
-					<RadzenRow>
-						<RadzenColumn Size="6">
-							<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => Elimina(singola)" class="w-100" />
-						</RadzenColumn>
-						<RadzenColumn Size="6">
-							<RadzenButton ButtonStyle="ButtonStyle.Warning" Icon="edit" Click="x => Modifica(singola)" class="w-100" />
-						</RadzenColumn>
-					</RadzenRow>
+					@if (giocatore.IsAdmin)
+					{
+						<RadzenRow>
+							<RadzenColumn Size="6">
+								<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => Elimina(singola)" class="w-100" />
+							</RadzenColumn>
+							<RadzenColumn Size="6">
+								<RadzenButton ButtonStyle="ButtonStyle.Warning" Icon="edit" Click="x => Modifica(singola)" class="w-100" />
+							</RadzenColumn>
+						</RadzenRow>
+					}
 				</RadzenCard>
 			</RadzenColumn>
 		}
 	</RadzenRow>
-	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="add" Click="x => Modifica(new Abilità())" />
+	@if (giocatore.IsAdmin)
+	{
+		<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="add" Click="x => Modifica(new Abilità())" />
+	}
 }
 else
 {
@@ -53,8 +59,9 @@ else
 	</EditForm>
 }
 
-
 @code {
+	[CascadingParameter] public Giocatore giocatore { get; set; } = new Giocatore();
+
 	List<Abilità> Abilità = new List<Abilità>();
 	Abilità? inModifica = null;
 	protected override async Task OnInitializedAsync()
@@ -77,7 +84,7 @@ else
 		string errore = await abilitàService.SalvaAbilità(inModifica);
 		MostraErrore(errore, "Inserimento riuscito");
 		inModifica = null;
-		await Carica(); 
+		await Carica();
 	}
 
 	private async Task Elimina(Abilità quale)

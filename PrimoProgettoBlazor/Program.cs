@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.EntityFrameworkCore;
 using PrimoProgettoBlazor.Components;
 using PrimoProgettoBlazor.Components.Classi;
@@ -19,7 +20,8 @@ builder.Services.AddScoped<IPersonaggioService,PersonaggioService>();
 builder.Services.AddScoped<IAbilitàPersonaggioService,AbilitàPersonaggioService>(); 
 builder.Services.AddScoped<IAbilitàService,AbilitàService>(); 
 builder.Services.AddScoped<ISessioneService,SessioneService>(); 
-builder.Services.AddScoped<IGiocatoreService,GiocatoreService>(); 
+builder.Services.AddScoped<IGiocatoreService,GiocatoreService>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

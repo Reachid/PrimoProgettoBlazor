@@ -41,7 +41,20 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             {
                 using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    giocatore = await db.Giocatori.Where(x => x.Nome == nome).Include(x => x.Personaggi).FirstOrDefaultAsync();
+                    giocatore = await db.Giocatori.Where(x => x.Nome.ToLower() == nome.ToLower()).Include(x => x.Personaggi).FirstOrDefaultAsync();
+                }
+            }
+            return giocatore;
+        }
+
+        public async Task<Giocatore?> GetGiocatoreById(int idGiocatore)
+        {
+            Giocatore? giocatore = null;
+            using (var scope = factory.CreateScope())
+            {
+                using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
+                {
+                    giocatore = await db.Giocatori.Where(x => x.Id == idGiocatore).Include(x => x.Personaggi).FirstOrDefaultAsync();
                 }
             }
             return giocatore;

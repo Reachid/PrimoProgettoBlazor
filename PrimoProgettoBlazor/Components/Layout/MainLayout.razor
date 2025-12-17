@@ -1,20 +1,40 @@
 ﻿@inherits LayoutComponentBase
+@inject IGiocatoreService giocatoreService
+@inject IJSRuntime js
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+@if(giocatore != null)
+{
+    <div class="page">
+        <div class="sidebar">
+            <CascadingValue Value="giocatore">
+                <NavMenu />
+            </CascadingValue>
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+        <main>
+            <div class="top-row px-4">
+                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            </div>
+
+            <article class="content px-4">
+                <CascadingValue Value="giocatore">
+                    @Body
+                </CascadingValue>
+            </article>
+        </main>
+    </div>
+}
+else
+{
+    <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+        <RadzenText TextAlign="TextAlign.Center">Login</RadzenText>
+        <RadzenTextBox Placeholder="Inserisci il tuo nome" @bind-Value="@nome" />
+        <RadzenStack JustifyContent="JustifyContent.End">
+            <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="check" Click="CercaGiocatore" />
+        </RadzenStack>
+    </RadzenStack>
+}
+
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
@@ -25,4 +45,21 @@
 <RadzenComponents @rendermode="InteractiveAuto" />
 @code{
     Giocatore? giocatore = null; 
+    string nome = ""; 
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string id = await js.InvokeAsync<string>("readLocalStorage"); 
+            giocatore = await giocatoreService.GetGiocatoreById(int.Parse(id));
+            StateHasChanged(); 
+        }
+    }
+
+    private async Task CercaGiocatore()
+    {
+        giocatore = await giocatoreService.GetGiocatoreByName(nome); 
+        await js.InvokeVoidAsync("writeLocalStorage", giocatore.Id); 
+    }
 }

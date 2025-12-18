@@ -1,0 +1,26 @@
+﻿@inject ISessioneService sessioneService
+@inject DialogService dialog
+
+<EditForm Model="sessione" OnSubmit="Salva">
+    <RadzenStack Orientation="Orientation.Vertical" Gap=".5em">
+        <RadzenDropDown Data="@Sessioni" @bind-Value="@sessione" TextProperty="@(nameof(sessione.Nome))" Placeholder="Scegli una sessione" class="w-100" />
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="check" />
+        </RadzenStack>
+    </RadzenStack>
+</EditForm>
+
+@code {
+    Sessione? sessione = new Sessione(); 
+    List<Sessione> Sessioni = new List<Sessione>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Sessioni = await sessioneService.GetSessioni(); 
+    }
+
+    private void Salva()
+    {
+        dialog.Close(sessione); 
+    }
+}

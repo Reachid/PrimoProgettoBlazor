@@ -1,6 +1,6 @@
 ﻿window.readLocalStorage = () => {
     var item = window.localStorage.getItem("idGiocatore");
-    return item && item != undefined ? item : 0; 
+    return item && item != undefined ? item : "0"; 
 }
 
 window.writeLocalStorage = (id) => {

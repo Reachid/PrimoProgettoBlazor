@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject NavigationManager navman
 @inject IPersonaggioService personaggioService
+@inject DialogService dialog
 
 @if(personaggio == null)
 {
@@ -41,9 +42,22 @@ else
 
     Personaggio? personaggio = null; 
 
-    private void ApriScheda(Personaggio quale)
+    private async Task ApriScheda(Personaggio quale)
     {
-        //Qui ci dev'essere del codice che fa in modo di assegnare la sessione al nuovo personaggio, se non ne ha già una
+        if (quale.Id == 0)
+        {
+            var result = await dialog.OpenAsync<SchedaSessione>("Sessione personaggio", null, new DialogOptions()
+            {
+                Width = "20vw",
+                Height = "20vh",
+                Resizable = false,
+                Draggable = false
+            });
+            if (result is Sessione sessione)
+            {
+                quale.Sessione = sessione; 
+            }
+        }
         personaggio = quale; 
     }
 

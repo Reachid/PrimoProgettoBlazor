@@ -51,7 +51,7 @@ else
     {
         if (firstRender)
         {
-            string id = await js.InvokeAsync<string>("readLocalStorage"); 
+            string id = await js.InvokeAsync<string>("readLocalStorage");
             giocatore = await giocatoreService.GetGiocatoreById(int.Parse(id));
             StateHasChanged(); 
         }

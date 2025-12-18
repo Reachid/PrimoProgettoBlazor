@@ -7,7 +7,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
 {
     public class PersonaggioService : IPersonaggioService
     {
-        IServiceScopeFactory serviceScopeFactory; 
+        IServiceScopeFactory serviceScopeFactory;
         public PersonaggioService(IServiceScopeFactory sf)
         {
             serviceScopeFactory = sf;
@@ -20,31 +20,31 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             {
                 using (var scope = serviceScopeFactory.CreateScope())
                 {
-                    using(BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
+                    using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
                         db.Personaggi.Remove(personaggio);
-                        await db.SaveChangesAsync(); 
+                        await db.SaveChangesAsync();
                     }
                 }
             }
             catch (Exception ex)
             {
-                errore = ex.Message; 
+                errore = ex.Message;
             }
-            return errore; 
+            return errore;
         }
 
         public async Task<List<Personaggio>> GetPersonaggi()
         {
-            List<Personaggio> Personaggi = new List<Personaggio>(); 
+            List<Personaggio> Personaggi = new List<Personaggio>();
             using (var scope = serviceScopeFactory.CreateScope())
             {
-                using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>()) 
+                using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    Personaggi = await db.Personaggi.ToListAsync(); 
+                    Personaggi = await db.Personaggi.ToListAsync();
                 }
             }
-            return Personaggi; 
+            return Personaggi;
         }
 
         public async Task<Personaggio?> GetPersonaggioById(int idPersonaggio)
@@ -58,7 +58,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                                                      .ThenInclude(x => x.Abilità)
                                                      .Include(at => at.Attacchi)
                                                      .Where(x => x.Id == idPersonaggio)
-                                                     .FirstOrDefaultAsync(); 
+                                                     .FirstOrDefaultAsync();
                 }
             }
             return Personaggio;
@@ -73,13 +73,15 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
+                        db.Entry(personaggio.Sessione).State = EntityState.Unchanged;
+                        db.Entry(personaggio.Giocatore).State = EntityState.Unchanged;
                         if (personaggio.Id == 0)
                         {
-                            db.Personaggi.Add(personaggio); 
+                            db.Personaggi.Add(personaggio);
                         }
                         else
                         {
-                            db.Personaggi.Update(personaggio); 
+                            db.Personaggi.Update(personaggio);
                         }
                         await db.SaveChangesAsync();
                     }

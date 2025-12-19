@@ -147,7 +147,7 @@
 
 	public void InserisciAbilità()
 	{
-		if (abilitàPersonaggio.Abilità.IdAbilità == 0)
+		if (abilitàPersonaggio.Abilità.Id == 0)
 		{
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Warning, Summary = "Non hai ancora inserito un'abilità!" });
 			return; 

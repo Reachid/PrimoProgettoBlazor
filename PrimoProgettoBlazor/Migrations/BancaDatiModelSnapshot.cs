@@ -23,11 +23,11 @@ namespace PrimoProgettoBlazor.Migrations
 
             modelBuilder.Entity("PrimoProgettoBlazor.Components.Classi.Entities.Abilità", b =>
                 {
-                    b.Property<int>("IdAbilità")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAbilità"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descrizione")
                         .IsRequired()
@@ -40,7 +40,7 @@ namespace PrimoProgettoBlazor.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("IdAbilità");
+                    b.HasKey("Id");
 
                     b.ToTable("Abilità");
                 });
@@ -53,10 +53,15 @@ namespace PrimoProgettoBlazor.Migrations
                     b.Property<int>("PersonaggioId")
                         .HasColumnType("int");
 
+                    b.Property<int>("AbilitàId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Punteggio")
                         .HasColumnType("int");
 
                     b.HasKey("AbilitàIdAbilità", "PersonaggioId");
+
+                    b.HasIndex("AbilitàId");
 
                     b.HasIndex("PersonaggioId");
 
@@ -191,7 +196,7 @@ namespace PrimoProgettoBlazor.Migrations
                 {
                     b.HasOne("PrimoProgettoBlazor.Components.Classi.Entities.Abilità", "Abilità")
                         .WithMany("Personaggi")
-                        .HasForeignKey("AbilitàIdAbilità")
+                        .HasForeignKey("AbilitàId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -56,7 +56,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        if (abilità.IdAbilità == 0)
+                        if (abilità.Id == 0)
                         {
                             db.Abilità.Add(abilità); 
                         }

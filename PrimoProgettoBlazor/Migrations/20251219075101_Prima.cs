@@ -5,7 +5,7 @@
 namespace PrimoProgettoBlazor.Migrations
 {
     /// <inheritdoc />
-    public partial class prima : Migration
+    public partial class Prima : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,14 +14,15 @@ namespace PrimoProgettoBlazor.Migrations
                 name: "Abilità",
                 columns: table => new
                 {
-                    IdAbilità = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Descrizione = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Descrizione = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsAbilità = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Abilità", x => x.IdAbilità);
+                    table.PrimaryKey("PK_Abilità", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -30,7 +31,8 @@ namespace PrimoProgettoBlazor.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsAdmin = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,7 +40,7 @@ namespace PrimoProgettoBlazor.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sessione",
+                name: "Sessioni",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -47,7 +49,7 @@ namespace PrimoProgettoBlazor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sessione", x => x.Id);
+                    table.PrimaryKey("PK_Sessioni", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,9 +80,9 @@ namespace PrimoProgettoBlazor.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Personaggi_Sessione_SessioneId",
+                        name: "FK_Personaggi_Sessioni_SessioneId",
                         column: x => x.SessioneId,
-                        principalTable: "Sessione",
+                        principalTable: "Sessioni",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -91,16 +93,17 @@ namespace PrimoProgettoBlazor.Migrations
                 {
                     AbilitàIdAbilità = table.Column<int>(type: "int", nullable: false),
                     PersonaggioId = table.Column<int>(type: "int", nullable: false),
+                    AbilitàId = table.Column<int>(type: "int", nullable: false),
                     Punteggio = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AbilitàPersonaggi", x => new { x.AbilitàIdAbilità, x.PersonaggioId });
                     table.ForeignKey(
-                        name: "FK_AbilitàPersonaggi_Abilità_AbilitàIdAbilità",
-                        column: x => x.AbilitàIdAbilità,
+                        name: "FK_AbilitàPersonaggi_Abilità_AbilitàId",
+                        column: x => x.AbilitàId,
                         principalTable: "Abilità",
-                        principalColumn: "IdAbilità",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AbilitàPersonaggi_Personaggi_PersonaggioId",
@@ -132,6 +135,11 @@ namespace PrimoProgettoBlazor.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbilitàPersonaggi_AbilitàId",
+                table: "AbilitàPersonaggi",
+                column: "AbilitàId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AbilitàPersonaggi_PersonaggioId",
@@ -173,7 +181,7 @@ namespace PrimoProgettoBlazor.Migrations
                 name: "Giocatori");
 
             migrationBuilder.DropTable(
-                name: "Sessione");
+                name: "Sessioni");
         }
     }
 }

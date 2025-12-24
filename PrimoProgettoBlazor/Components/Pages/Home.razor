@@ -53,15 +53,22 @@ else
                 Resizable = false,
                 Draggable = false
             });
-            if (result is Sessione sessione)
+            if(result != null)
             {
-                quale.SessioneId = sessione.Id; 
-                quale.Sessione = sessione; 
-                quale.Giocatore = giocatore; 
-                quale.GiocatoreId = giocatore.Id; 
+                if (result is Sessione sessione)
+                {
+                    quale.SessioneId = sessione.Id;
+                    quale.Sessione = sessione;
+                    quale.Giocatore = giocatore;
+                    quale.GiocatoreId = giocatore.Id;
+                    personaggio = quale;
+                }
             }
         }
-        personaggio = quale; 
+        else
+        {
+            personaggio = quale;
+        }
     }
 
     private void ResettaPersonaggio()

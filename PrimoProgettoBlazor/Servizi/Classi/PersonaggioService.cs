@@ -22,6 +22,15 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
+                        db.Entry(personaggio.Sessione).State = EntityState.Unchanged;
+                        db.Entry(personaggio.Giocatore).State = EntityState.Unchanged;
+
+                        foreach (AbilitàPersonaggio ap in personaggio.Abilità)
+                        {
+                            db.Entry(ap.Abilità).State = EntityState.Unchanged;
+                            db.Entry(ap).State = EntityState.Deleted;
+                            db.AbilitàPersonaggi.Remove(ap);
+                        }
                         db.Personaggi.Remove(personaggio);
                         await db.SaveChangesAsync();
                     }
@@ -57,7 +66,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                     Personaggio = await db.Personaggi.Include(ap => ap.Abilità)
                                                      .ThenInclude(x => x.Abilità)
                                                      .Include(at => at.Attacchi)
-                                                     .Where(x => x.Id == idPersonaggio)
+                                                     .Where(x => x.Id == idPersonaggio).AsNoTracking()
                                                      .FirstOrDefaultAsync();
                 }
             }
@@ -77,11 +86,30 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                         db.Entry(personaggio.Giocatore).State = EntityState.Unchanged;
                         if (personaggio.Id == 0)
                         {
+                            db.Entry(personaggio).State = EntityState.Added;
                             db.Personaggi.Add(personaggio);
                         }
                         else
                         {
+                            db.Entry(personaggio).State = EntityState.Modified;
                             db.Personaggi.Update(personaggio);
+                        }
+                        await db.SaveChangesAsync();
+
+                        foreach (AbilitàPersonaggio ap in personaggio.Abilità)
+                        {
+                            ap.PersonaggioId = personaggio.Id;
+                            db.Entry(ap.Abilità).State = EntityState.Unchanged;
+                            if (db.AbilitàPersonaggi.Any(x => x.PersonaggioId == ap.PersonaggioId && x.AbilitàIdAbilità == ap.AbilitàIdAbilità))
+                            {
+                                db.Entry(ap).State = EntityState.Modified;
+                                db.AbilitàPersonaggi.Update(ap);
+                            }
+                            else
+                            {
+                                db.Entry(ap).State = EntityState.Added;
+                                db.AbilitàPersonaggi.Add(ap);
+                            }
                         }
                         await db.SaveChangesAsync();
                     }

@@ -154,6 +154,7 @@
 		}
 		abilitàPersonaggio.Personaggio = personaggio; 
 		abilitàPersonaggio.PersonaggioId = personaggio.Id; 
+		abilitàPersonaggio.AbilitàIdAbilità = abilitàPersonaggio.Abilità.Id; 
 		personaggio.Abilità.Add(abilitàPersonaggio);
 		abilitàPersonaggio = new AbilitàPersonaggio();
 	}

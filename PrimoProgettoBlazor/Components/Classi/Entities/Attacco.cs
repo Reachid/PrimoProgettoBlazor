@@ -11,5 +11,6 @@ namespace PrimoProgettoBlazor.Components.Classi.Entities
         public int Moltiplicatore { get; set; }
         public string Vigore { get; set; }
         public Personaggio Personaggio { get; set; }
+        public ICollection<AttaccoPerk> AttacchiPerks { get; set; } = new List<AttaccoPerk>();
     }
 }

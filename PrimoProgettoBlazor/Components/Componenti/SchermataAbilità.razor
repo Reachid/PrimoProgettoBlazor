@@ -1,5 +1,5 @@
 ﻿@inject DialogService dialog
-<RadzenFieldset Text="@Titolo" AllowCollapse="@Collapsable" class="w-100">
+<RadzenPanel Text="@Titolo" AllowCollapse="@Collapsable" class="w-100">
 	@foreach (AbilitàPersonaggio singola in Abilità.Where(x => x.Abilità.IsAbilità == IsAbilità))
 	{
 		<RadzenRow>
@@ -34,7 +34,7 @@
 			</RadzenColumn>
 		</RadzenRow>
 	}
-</RadzenFieldset>
+</RadzenPanel>
 
 @code {
 	[Parameter] public string Titolo { get; set; }

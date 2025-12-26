@@ -6,7 +6,7 @@
 			<RadzenColumn Size="4">
 				<RadzenText class="w-100">@singola.Abilità.Nome</RadzenText>
 			</RadzenColumn>
-			<RadzenColumn Size="4">
+			<RadzenColumn Size="2">
 				@if (!singola.Modifica)
 				{
 					<RadzenText class="w-100">@singola.Punteggio</RadzenText>
@@ -19,17 +19,17 @@
 			<RadzenColumn Size="2">
 				@if (!singola.Modifica)
 				{
-					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Warning" class="w-100 h-100" Click="x => singola.Modifica = true" />
+					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Warning" class="w-100" Click="x => singola.Modifica = true" />
 				}
 				else
 				{
-					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" class="w-100 h-100" Click="x => singola.Modifica = false" />
+					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" class="w-100" Click="x => singola.Modifica = false" />
 				}
 			</RadzenColumn>
-			<RadzenColumn Size="1">
+			<RadzenColumn Size="2">
 				<RadzenButton Icon="menu" ButtonStyle="ButtonStyle.Primary" Click="x => VisualizzaDescrizione(singola.Abilità)" class="w-100" />
 			</RadzenColumn>
-			<RadzenColumn Size="1">
+			<RadzenColumn Size="2">
 				<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="x => EliminaAbilità(singola)" class="w-100" />
 			</RadzenColumn>
 		</RadzenRow>

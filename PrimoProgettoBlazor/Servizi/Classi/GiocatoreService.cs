@@ -55,6 +55,13 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
                     giocatore = await db.Giocatori.Where(x => x.Id == idGiocatore).Include(x => x.Personaggi).FirstOrDefaultAsync();
+                    if (giocatore != null && giocatore.IsAdmin)
+                    {
+                        foreach(Personaggio p in db.Personaggi.Where(x => x.GiocatoreId != giocatore.Id))
+                        {
+                            giocatore.Personaggi.Add(p);
+                        }
+                    }
                 }
             }
             return giocatore;

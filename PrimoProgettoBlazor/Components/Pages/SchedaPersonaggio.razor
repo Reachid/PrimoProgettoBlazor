@@ -92,7 +92,7 @@
 			</RadzenColumn>
 		</RadzenRow>
 	</RadzenFieldset>
-	<RadzenFieldset Text="Attacchhi">
+	<RadzenFieldset Text="Attacchi">
 		<RadzenRow></RadzenRow>
 	</RadzenFieldset>
 	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="save" />
@@ -103,6 +103,8 @@
 	public Personaggio? personaggio { get; set; } = new Personaggio();
 	[Parameter]
 	public EventCallback OnSalva { get; set; }
+	[Parameter]
+	public EventCallback OnClose { get; set; }
 
 	List<Abilità> AbilitàTotali = new List<Abilità>();
 	string titolo = "";
@@ -131,10 +133,29 @@
 
 	private async Task Salva()
 	{
-		await personaggioService.SalvaPersonaggio(personaggio);
-		if (OnSalva.HasDelegate)
+		bool? result = await dialog.Confirm("Sei sicuro di voler salvare le modifiche al personaggio?", "Salvataggio", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
+		if(result.HasValue)
 		{
-			await OnSalva.InvokeAsync(); 
+			if (result.Value)
+			{
+				await personaggioService.SalvaPersonaggio(personaggio);
+				if (OnSalva.HasDelegate)
+				{
+					await OnSalva.InvokeAsync();
+				}
+			}
+			else
+			{
+				await Close(); 
+			}
+		}
+	}
+
+	private async Task Close()
+	{
+		if (OnClose.HasDelegate)
+		{
+			await OnClose.InvokeAsync(); 
 		}
 	}
 
@@ -144,20 +165,27 @@
 		if (result.HasValue && result.Value)
 		{
 			personaggio.Abilità.Remove(quale); 
+			await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale); 
 			notify.Notify(new NotificationMessage() {Severity = NotificationSeverity.Success, Summary ="Abilità eliminata!"}); 
 		}
 	}
 
 	public void InserisciAbilità()
 	{
-		if (abilitàPersonaggio.Abilità.Id == 0)
+		if (abilitàPersonaggio.Abilità == null || abilitàPersonaggio.Abilità.Id == 0)
 		{
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Warning, Summary = "Non hai ancora inserito un'abilità!" });
 			return; 
 		}
+
+		if(personaggio.Abilità.Any(x => x.Abilità.Id == abilitàPersonaggio.Abilità.Id))
+		{
+			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Warning, Summary = "Questa abilità esiste già!" });
+			return;
+		}
 		abilitàPersonaggio.Personaggio = personaggio; 
 		abilitàPersonaggio.PersonaggioId = personaggio.Id; 
-		abilitàPersonaggio.AbilitàIdAbilità = abilitàPersonaggio.Abilità.Id; 
+		abilitàPersonaggio.AbilitàIdAbilità = abilitàPersonaggio.Abilità.Id;
 		personaggio.Abilità.Add(abilitàPersonaggio);
 		abilitàPersonaggio = new AbilitàPersonaggio();
 	}

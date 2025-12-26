@@ -22,8 +22,15 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Entry(personaggio.Sessione).State = EntityState.Unchanged;
-                        db.Entry(personaggio.Giocatore).State = EntityState.Unchanged;
+                        if(personaggio.Sessione != null)
+                        {
+                            db.Entry(personaggio.Sessione).State = EntityState.Unchanged;
+                        }
+
+                        if(personaggio.Giocatore != null)
+                        {
+                            db.Entry(personaggio.Giocatore).State = EntityState.Unchanged;
+                        }
 
                         foreach (AbilitàPersonaggio ap in personaggio.Abilità)
                         {
@@ -66,7 +73,10 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                     Personaggio = await db.Personaggi.Include(ap => ap.Abilità)
                                                      .ThenInclude(x => x.Abilità)
                                                      .Include(at => at.Attacchi)
-                                                     .Where(x => x.Id == idPersonaggio).AsNoTracking()
+                                                     .Include(AT => AT.Sessione)
+                                                     .Include(at => at.Giocatore)
+                                                     .Where(x => x.Id == idPersonaggio)
+                                                     .AsNoTracking()
                                                      .FirstOrDefaultAsync();
                 }
             }
@@ -92,6 +102,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                         else
                         {
                             db.Entry(personaggio).State = EntityState.Modified;
+                            db.Entry(personaggio.Giocatore).State = EntityState.Unchanged;
                             db.Personaggi.Update(personaggio);
                         }
                         await db.SaveChangesAsync();

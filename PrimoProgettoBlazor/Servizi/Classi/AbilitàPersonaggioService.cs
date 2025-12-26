@@ -22,6 +22,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
+                        db.Entry(abilitàPersonaggio.Abilità).State = EntityState.Unchanged; 
                         db.AbilitàPersonaggi.Remove(abilitàPersonaggio); 
                         await db.SaveChangesAsync();
                     }

@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject NavigationManager navman
 @inject IPersonaggioService personaggioService
+@inject IGiocatoreService giocatoreService
 @inject DialogService dialog
 
 @if(personaggio == null)
@@ -30,7 +31,7 @@
 }
 else
 {
-    <SchedaPersonaggio personaggio="personaggio" OnSalva="ResettaPersonaggio" />
+    <SchedaPersonaggio personaggio="personaggio" OnSalva="ResettaPersonaggio" OnClose="@(() => personaggio = null)" />
 }
 
 
@@ -67,17 +68,26 @@ else
         }
         else
         {
-            personaggio = quale;
+            personaggio = await personaggioService.GetPersonaggioById(quale.Id);
         }
     }
 
-    private void ResettaPersonaggio()
+    private async Task ResettaPersonaggio()
     {
         personaggio = null; 
+        giocatore = await giocatoreService.GetGiocatoreById(giocatore.Id); 
+        StateHasChanged(); 
+    }
+
+    private async Task Chiudi()
+    {
+        personaggio = null;
+        StateHasChanged();
     }
 
     private async Task EliminaPersonaggio(Personaggio personaggio)
     {
         await personaggioService.EliminaPersonaggio(personaggio); 
+        StateHasChanged(); 
     }
 }

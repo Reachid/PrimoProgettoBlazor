@@ -45,13 +45,14 @@ else
 				</RadzenFormField>
 			</RadzenColumn>
 			<RadzenColumn Size="6">
+				<RadzenLabel Text="È un abilità positiva: "></RadzenLabel>
 				<RadzenSwitch @bind-Value="@inModifica.IsAbilità" />
 			</RadzenColumn>
 		</RadzenRow>
 		<RadzenRow>
 			<RadzenColumn Size="12">
 				<RadzenFormField Text="Descrizione" class="w-100">
-					<RadzenTextArea @bind-Value="@inModifica.Descrizione" class="w-100" />
+					<RadzenTextArea @bind-Value="@inModifica.Descrizione" class="w-100" Rows="50" />
 				</RadzenFormField>
 			</RadzenColumn>
 		</RadzenRow>

@@ -21,6 +21,20 @@
             </NavLink>
         </div>
     </nav>
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/Perk" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Perks
+            </NavLink>
+        </div>
+    </nav>
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/Keywords" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Keywords
+            </NavLink>
+        </div>
+    </nav>
     @if (giocatore.IsAdmin)
     {
         <nav class="flex-column">
@@ -34,6 +48,13 @@
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/Giocatori" Match="NavLinkMatch.All">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Giocatori
+                </NavLink>
+            </div>
+        </nav>
+        <nav class="flex-column">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/CategorieKeywords" Match="NavLinkMatch.All">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Categorie keyword
                 </NavLink>
             </div>
         </nav>

@@ -21,6 +21,9 @@ builder.Services.AddScoped<IAbilitàPersonaggioService,AbilitàPersonaggioService>
 builder.Services.AddScoped<IAbilitàService,AbilitàService>(); 
 builder.Services.AddScoped<ISessioneService,SessioneService>(); 
 builder.Services.AddScoped<IGiocatoreService,GiocatoreService>();
+builder.Services.AddScoped<IPerkService,PerkService>();
+builder.Services.AddScoped<ICategoriaKeywordService,CategoriaKeywordService>();
+builder.Services.AddScoped<IKeywordService,KeywordService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

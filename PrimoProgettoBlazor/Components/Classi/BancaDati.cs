@@ -13,6 +13,8 @@ namespace PrimoProgettoBlazor.Components.Classi
         public DbSet<Sessione> Sessioni { get; set; }
         public DbSet<Perk> Perks { get; set; }
         public DbSet<AttaccoPerk> AttacchiPerks { get; set; }
+        public DbSet<Keyword> Keywords { get; set; }
+        public DbSet<CategoriaKeyword> CategorieKeywords { get; set; }
         public BancaDati(DbContextOptions<BancaDati> options) : base(options)
         {
 

@@ -1,0 +1,105 @@
+﻿@page "/CategorieKeywords"
+@inject ICategoriaKeywordService categoriaKeywordService
+@inject DialogService dialog
+@inject NotificationService notify
+
+@if (categoria == null)
+{
+	<RadzenRow>
+		@foreach (CategoriaKeyword singola in CategorieKeywords)
+		{
+			<RadzenColumn SizeMD="6" Size="12">
+				<RadzenCard>
+					<RadzenRow>
+						<RadzenColumn Size="12">
+							<RadzenText TextAlign="TextAlign.Center" Text="@singola.Nome" />
+						</RadzenColumn>
+					</RadzenRow>
+					<RadzenRow>
+						<RadzenColumn Size="6">
+							<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => Elimina(singola)" class="w-100" />
+						</RadzenColumn>
+						<RadzenColumn Size="6">
+							<RadzenButton ButtonStyle="ButtonStyle.Warning" Icon="edit" Click="x => Modifica(singola)" class="w-100" />
+						</RadzenColumn>
+					</RadzenRow>
+				</RadzenCard>
+			</RadzenColumn>
+		}
+	</RadzenRow>
+	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="add" Click="x => Modifica(new CategoriaKeyword())" />
+}
+else
+{
+	<EditForm Model="categoria" OnSubmit="Salva">
+		<RadzenRow>
+			<RadzenColumn Size="12" SizeMD="6">
+				<RadzenFormField Text="Nome" class="w-100">
+					<RadzenTextBox @bind-Value="@categoria.Nome" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="12" SizeMD="6" class="w-100">
+				<RadzenText Text="Visibile solo dall'amministratore"></RadzenText>
+				<RadzenSwitch @bind-Value="@categoria.VisibileDaAdmin" />
+			</RadzenColumn>
+			<RadzenColumn Size="12">
+				<RadzenFormField Text="Nome" class="w-100">
+					<RadzenTextArea @bind-Value="@categoria.Descrizione" class="w-100" />
+				</RadzenFormField>
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="save" />
+	</EditForm>
+}
+
+@code {
+	[CascadingParameter] public Giocatore giocatore { get; set; }
+
+	List<CategoriaKeyword> CategorieKeywords = new List<CategoriaKeyword>();
+	CategoriaKeyword? categoria = null;
+	protected override async Task OnInitializedAsync()
+	{
+		await Carica();
+	}
+
+	private async Task Carica()
+	{
+		CategorieKeywords = await categoriaKeywordService.GetCategorieKeyword(giocatore);
+	}
+
+	private void Modifica(CategoriaKeyword quale)
+	{
+		categoria = quale;
+	}
+
+	private async Task Salva()
+	{
+		string errore = await categoriaKeywordService.SalvaCategoriaKeyword(categoria);
+		MostraErrore(errore, "Inserimento riuscito");
+		categoria = null;
+		await Carica();
+	}
+
+	private async Task Elimina(CategoriaKeyword quale)
+	{
+		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa categoria?", "Eliminazione categoria", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
+		if (result.HasValue && result.Value)
+		{
+			string errore = await categoriaKeywordService.EliminaCategoriaKeyword(quale);
+			MostraErrore(errore, "Elinimazione riuscita!");
+			await Carica();
+		}
+	}
+
+	private void MostraErrore(string errore, string messaggioDiRiuscita)
+	{
+		if (string.IsNullOrEmpty(errore))
+		{
+			notify.Notify(NotificationSeverity.Success, messaggioDiRiuscita);
+		}
+		else
+		{
+			notify.Notify(NotificationSeverity.Error, errore);
+		}
+	}
+}

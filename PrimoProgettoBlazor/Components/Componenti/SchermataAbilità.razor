@@ -1,8 +1,12 @@
 ﻿@inject DialogService dialog
+@inject IAbilitàService abilitàService
 <RadzenPanel Text="@Titolo" AllowCollapse="@Collapsable" class="w-100">
+	<RadzenRow class="rz-pb-2">
+		<AbilitàSelector Positivo="@IsAbilità" AbilitàTotali="AbilitàTotali" OnInserisciAbilità="InserisciAbilità" />
+	</RadzenRow>
 	@foreach (AbilitàPersonaggio singola in Abilità.Where(x => x.Abilità.IsAbilità == IsAbilità))
 	{
-		<RadzenRow>
+		<RadzenRow class="rz-pb-2">
 			<RadzenColumn Size="4">
 				<RadzenText class="w-100">@singola.Abilità.Nome</RadzenText>
 			</RadzenColumn>
@@ -43,6 +47,14 @@
 	[Parameter] public bool IsAbilità { get; set; } = true; 
 	[Parameter] public bool Collapsable { get; set; } = true; 
 	[Parameter] public EventCallback<AbilitàPersonaggio> EliminaAbilitàPersonaggio { get; set; }
+	[Parameter] public EventCallback<AbilitàPersonaggio> OnInserisciAbilità { get; set; }
+	
+	List<Abilità> AbilitàTotali = new List<Abilità>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		AbilitàTotali = await abilitàService.GetAbilità();
+	}
 
 	private async Task ChangePunteggio(AbilitàPersonaggio abilitàPersonaggio, int punteggioNuovo)
 	{
@@ -68,6 +80,14 @@
 		if (EliminaAbilitàPersonaggio.HasDelegate)
 		{
 			await EliminaAbilitàPersonaggio.InvokeAsync(quale); 
+		}
+	}
+
+	private void InserisciAbilità(AbilitàPersonaggio abilitàPersonaggio)
+	{
+		if (OnInserisciAbilità.HasDelegate)
+		{
+			OnInserisciAbilità.InvokeAsync(abilitàPersonaggio); 
 		}
 	}
 }

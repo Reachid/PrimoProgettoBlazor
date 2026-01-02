@@ -1,0 +1,22 @@
+﻿@inject DialogService dialog
+<RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenFormField Text="Nome attacco" class="w-100">
+            <RadzenTextBox @bind-Value="@nomeAttacco" />
+        </RadzenFormField>
+    </RadzenColumn>
+    <RadzenColumn Size="12">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.End">
+            <RadzenButton Icon="check" Click="SalvaNome" />
+        </RadzenStack>
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    string nomeAttacco = ""; 
+
+    private void SalvaNome()
+    {
+        dialog.Close(nomeAttacco); 
+    }
+}

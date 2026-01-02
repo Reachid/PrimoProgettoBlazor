@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrimoProgettoBlazor.Components.Classi.Entities
 {
@@ -6,11 +7,14 @@ namespace PrimoProgettoBlazor.Components.Classi.Entities
     {
         [Key]
         public int IdAttacco { get; set; }
-        public string Nome { get; set; }
-        public int Roll { get; set; }
-        public int Moltiplicatore { get; set; }
-        public string Vigore { get; set; }
-        public Personaggio Personaggio { get; set; }
+        public string Nome { get; set; } = "";
+        public int Roll { get; set; } = 0;
+        public int Moltiplicatore { get; set; } = 0;
+        public string Vigore { get; set; } = "";
+        public int PersonaggioId { get; set; } = 0;
+        public Personaggio Personaggio { get; set; } = new Personaggio();
+        [NotMapped]
+        public bool InModifica { get; set; }
         public ICollection<AttaccoPerk> AttacchiPerks { get; set; } = new List<AttaccoPerk>();
     }
 }

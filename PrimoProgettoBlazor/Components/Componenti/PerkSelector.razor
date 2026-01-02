@@ -1,6 +1,6 @@
 ﻿<RadzenColumn Size="12" SizeMD="8">
 	<RadzenFormField Text="Nome Abilità" Variant="Variant.Outlined" class="w-100">
-		<RadzenDropDown Data="@AbilitàFiltrate"
+		<RadzenDropDown Data="@PerkFiltrate"
 						AllowFiltering="true"
 						FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
 						@bind-Value="@PerkAttacco.Perk"
@@ -18,18 +18,18 @@
 </RadzenColumn>
 
 @code {
-	[Parameter] public List<Perk> PerkTotali { get; set; }
+	[Parameter] public List<Perk> PerkTotali { get; set; } = new List<Perk>(); 
 	[Parameter] public EventCallback<AttaccoPerk> OnInserisciAbilità { get; set; }
 	[Parameter] public bool Positivo { get; set; }
 
 	AttaccoPerk PerkAttacco = new AttaccoPerk();
-	List<Perk> AbilitàFiltrate = new List<Perk>();
+	List<Perk> PerkFiltrate = new List<Perk>();
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (!AbilitàFiltrate.Any() && PerkTotali.Any())
+		if (!PerkFiltrate.Any() && PerkTotali.Any())
 		{
-			AbilitàFiltrate = PerkTotali.Where(x => x.IsAbilità == Positivo).ToList();
+			PerkFiltrate = PerkTotali.Where(x => x.IsAbilità == Positivo).ToList();
 			StateHasChanged();
 		}
 	}

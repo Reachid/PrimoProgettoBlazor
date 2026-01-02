@@ -1,5 +1,79 @@
-﻿<h3>CollectorAttacchi</h3>
-
+﻿<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.End">
+    <RadzenButton Icon="add" ButtonStyle="ButtonStyle.Primary" Click="InserisciAttacco" />
+</RadzenStack>
+@foreach (Attacco attacco in personaggio.Attacchi)
+{
+    <RadzenPanel Text="@attacco.Nome" AllowCollapse="@true" class="w-100">
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="3">
+                <RadzenFormField Text="Roll" class="w-100">
+                    @if (attacco.InModifica)
+                    {
+                        <RadzenNumeric @bind-Value="@attacco.Roll" class="w-100" />
+                    }
+                    else
+                    {
+                        <RadzenText Text="@attacco.Roll.ToString()" class="w-100" />
+                    }
+                </RadzenFormField>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="3" class="w-100">
+                <RadzenFormField Text="Moltiplicatore" class="w-100">
+                    @if (attacco.InModifica)
+                    {
+                        <RadzenNumeric @bind-Value="@attacco.Moltiplicatore" class="w-100" />
+                    }
+                    else
+                    {
+                        <RadzenText Text="@attacco.Moltiplicatore.ToString()" class="w-100" />
+                    }
+                </RadzenFormField>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="3" class="w-100">
+                <RadzenFormField Text="Vigore" class="w-100">
+                    @if (attacco.InModifica)
+                    {
+                        <RadzenTextBox @bind-Value="@attacco.Vigore" class="w-100" />
+                    }
+                    else
+                    {
+                        <RadzenText Text="@attacco.Vigore" class="w-100" />
+                    }
+                </RadzenFormField>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="3" class="w-100">
+                @if (attacco.InModifica)
+                {
+                    <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Secondary" Click="@(() => attacco.InModifica = true)" class="w-100 h-100" />
+                }
+                else
+                {
+                    <RadzenButton Icon="save" ButtonStyle="ButtonStyle.Primary" Click="@(() => attacco.InModifica = false)" class="w-100 h-100" />
+                }
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="6" class="rz-pb-2">
+                <RadzenPanel Text="Perk" AllowCollapse="true" >
+                    <RadzenRow>
+                        <PerkSelector Positivo="true" />
+                    </RadzenRow>
+                </RadzenPanel>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="6" class="rz-pb-2">
+                <RadzenPanel Text="Debolezze" AllowCollapse="true">
+                    <RadzenRow>
+                        <PerkSelector Positivo="true" />
+                    </RadzenRow>
+                </RadzenPanel>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenPanel>
+}
 @code {
-	[Parameter] public Personaggio personaggio { get; set; }
+    [Parameter] public Personaggio personaggio { get; set; }
+    public void InserisciAttacco()
+    {
+        personaggio.Attacchi.Add(new Attacco() {InModifica = true, Personaggio = personaggio, PersonaggioId = personaggio.Id}); 
+    }
 }

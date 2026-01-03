@@ -8,7 +8,7 @@
 </RadzenStack>
 @foreach (Attacco attacco in personaggio.Attacchi)
 {
-	<RadzenPanel Text="@attacco.Nome" AllowCollapse="@true" class="w-100 rz-mb-1">
+	<RadzenPanel Text="@attacco.Nome" AllowCollapse="@true" class="w-100 rz-mb-3">
 		<RadzenRow>
 			<RadzenColumn Size="12" SizeMD="6">
 				<RadzenRow>
@@ -72,7 +72,7 @@
 							   OnInserisciPerk="x => InserisciAbilità(x, attacco)"
 							   OnEliminaPerk="x => EliminaPerk(x, attacco)"
 							   Collapsable="true"
-							   Titolo="Perk" />
+							   Titolo="Vantaggi" />
 			</RadzenColumn>
 			<RadzenColumn Size="12" SizeMD="6" class="rz-pb-2">
 				<SchermataPerk @bind-Perk="attacco.AttacchiPerks"
@@ -80,7 +80,7 @@
 							   OnInserisciPerk="x => InserisciAbilità(x, attacco)"
 							   OnEliminaPerk="x => EliminaPerk(x, attacco)"
 							   Collapsable="true"
-							   Titolo="Debolezze" />
+							   Titolo="Svantaggi" />
 			</RadzenColumn>
 		</RadzenRow>
 	</RadzenPanel>

@@ -2,67 +2,61 @@
 @inject IGiocatoreService giocatoreService
 @inject IJSRuntime js
 
-@if(giocatore != null)
+@if (giocatore != null)
 {
-    <div class="page">
-        <div class="sidebar">
-            <CascadingValue Value="giocatore">
-                <NavMenu />
-            </CascadingValue>
-        </div>
-
-        <main>
-            <div class="top-row px-4">
-                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-            </div>
-
-            <article class="content px-4">
-                <CascadingValue Value="giocatore">
-                    @Body
-                </CascadingValue>
-            </article>
-        </main>
-    </div>
+	<CascadingValue Value="giocatore">
+		<TopMenu />
+	</CascadingValue>
+	<div class="page">
+		<main>
+			<article class="content px-4">
+				<CascadingValue Value="giocatore">
+					@Body
+				</CascadingValue>
+			</article>
+		</main>
+	</div>
 }
 else
 {
-    <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
-        <RadzenText TextAlign="TextAlign.Center">Login</RadzenText>
-        <RadzenTextBox Placeholder="Inserisci il tuo nome" @bind-Value="@nome" />
-        <RadzenStack JustifyContent="JustifyContent.End">
-            <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="check" Click="CercaGiocatore" />
-        </RadzenStack>
-    </RadzenStack>
+	<RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" class="w-100 h-100 p-2">
+		<RadzenPanel AllowCollapse="false" Text="Login">
+			<RadzenTextBox Placeholder="Inserisci il tuo nome" @bind-Value="@nome" />
+			<RadzenStack JustifyContent="JustifyContent.End">
+				<RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="check" Click="CercaGiocatore" />
+			</RadzenStack>
+		</RadzenPanel>
+	</RadzenStack>
 }
 
 
 <div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+	An unhandled error has occurred.
+	<a href="" class="reload">Reload</a>
+	<a class="dismiss">🗙</a>
 </div>
 
 <RadzenComponents @rendermode="InteractiveAuto" />
-@code{
-    Giocatore? giocatore = null; 
-    string nome = ""; 
+@code {
+	Giocatore? giocatore = null;
+	string nome = "";
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            string id = await js.InvokeAsync<string>("readLocalStorage");
-            giocatore = await giocatoreService.GetGiocatoreById(int.Parse(id));
-            StateHasChanged(); 
-        }
-    }
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			string id = await js.InvokeAsync<string>("readLocalStorage");
+			giocatore = await giocatoreService.GetGiocatoreById(int.Parse(id));
+			StateHasChanged();
+		}
+	}
 
-    private async Task CercaGiocatore()
-    {
-        giocatore = await giocatoreService.GetGiocatoreByName(nome); 
-        if (giocatore != null)
-        {
-            await js.InvokeVoidAsync("writeLocalStorage", giocatore.Id);
-        }
-    }
+	private async Task CercaGiocatore()
+	{
+		giocatore = await giocatoreService.GetGiocatoreByName(nome);
+		if (giocatore != null)
+		{
+			await js.InvokeVoidAsync("writeLocalStorage", giocatore.Id);
+		}
+	}
 }

@@ -4,90 +4,94 @@
 @inject IGiocatoreService giocatoreService
 @inject DialogService dialog
 
-@if(personaggio == null)
+@if (personaggio == null)
 {
-    <RadzenRow>
-        @foreach (Personaggio personaggio in giocatore.Personaggi)
-        {
-            <RadzenColumn Size="6">
-                <RadzenCard>
-                    <RadzenRow>
-                        <RadzenText>@personaggio.Nome</RadzenText>
-                        <RadzenText>@personaggio.Sessione.Nome</RadzenText>
-                    </RadzenRow>
-                    <RadzenRow>
-                        <RadzenColumn>
-                            <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="edit" Click="x => ApriScheda(personaggio)" />
-                        </RadzenColumn>
-                        <RadzenColumn>
-                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => EliminaPersonaggio(personaggio)" />
-                        </RadzenColumn>
-                    </RadzenRow>
-                </RadzenCard>
-            </RadzenColumn>
-        }
-    </RadzenRow>
-    <RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda(new Personaggio())" Icon="add" />
+	<RadzenRow>
+		@foreach (Personaggio personaggio in giocatore.Personaggi)
+		{
+			<RadzenColumn Size="6" SizeMD="3">
+				<RadzenCard>
+					<RadzenRow>
+						<RadzenText TagName="TagName.H2" TextStyle="TextStyle.DisplayH5" class="w-100" TextAlign="TextAlign.Center">@personaggio.Nome</RadzenText>
+						<RadzenText TagName="TagName.H3" TextStyle="TextStyle.DisplayH6" class="w-100" TextAlign="TextAlign.Center">@personaggio.Sessione.Nome</RadzenText>
+					</RadzenRow>
+					<RadzenRow>
+						<RadzenColumn>
+							<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+								<RadzenButton class="w-50" ButtonStyle="ButtonStyle.Secondary" Icon="edit" Click="x => ApriScheda(personaggio)" />
+							</RadzenStack>
+						</RadzenColumn>
+						<RadzenColumn>
+							<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+								<RadzenButton class="w-50" ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => EliminaPersonaggio(personaggio)" />
+							</RadzenStack>
+						</RadzenColumn>
+					</RadzenRow>
+				</RadzenCard>
+			</RadzenColumn>
+		}
+	</RadzenRow>
+	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda(new Personaggio())" Icon="add" />
 }
 else
 {
-    <SchedaPersonaggio personaggio="personaggio" OnSalva="ResettaPersonaggio" OnClose="@(() => personaggio = null)" />
+	<SchedaPersonaggio personaggio="personaggio" OnSalva="ResettaPersonaggio" OnClose="@(() => personaggio = null)" />
 }
 
 
 
 @code {
-    List<Personaggio> Personaggi = new List<Personaggio>();
-    [CascadingParameter]
-    public Giocatore giocatore { get; set; } = new Giocatore();
+	List<Personaggio> Personaggi = new List<Personaggio>();
+	[CascadingParameter]
+	public Giocatore giocatore { get; set; } = new Giocatore();
 
-    Personaggio? personaggio = null; 
+	Personaggio? personaggio = null;
 
-    private async Task ApriScheda(Personaggio quale)
-    {
-        if (quale.Id == 0)
-        {
-            var result = await dialog.OpenAsync<SchedaSessione>("Sessione personaggio", null, new DialogOptions()
-            {
-                Width = "20vw",
-                Height = "30vh",
-                Resizable = false,
-                Draggable = false
-            });
-            if(result != null)
-            {
-                if (result is Sessione sessione)
-                {
-                    quale.SessioneId = sessione.Id;
-                    quale.Sessione = sessione;
-                    quale.Giocatore = giocatore;
-                    quale.GiocatoreId = giocatore.Id;
-                    personaggio = quale;
-                }
-            }
-        }
-        else
-        {
-            personaggio = await personaggioService.GetPersonaggioById(quale.Id);
-        }
-    }
+	private async Task ApriScheda(Personaggio quale)
+	{
+		if (quale.Id == 0)
+		{
+			var result = await dialog.OpenAsync<SchedaSessione>("Sessione personaggio", null, new DialogOptions()
+				{
+					Width = "20vw",
+					Height = "30vh",
+					Resizable = false,
+					Draggable = false
+				});
+			if (result != null)
+			{
+				if (result is Sessione sessione)
+				{
+					quale.SessioneId = sessione.Id;
+					quale.Sessione = sessione;
+					quale.Giocatore = giocatore;
+					quale.GiocatoreId = giocatore.Id;
+					personaggio = quale;
+				}
+			}
+		}
+		else
+		{
+			personaggio = await personaggioService.GetPersonaggioById(quale.Id);
+		}
+	}
 
-    private async Task ResettaPersonaggio()
-    {
-        personaggio = null; 
-        giocatore = await giocatoreService.GetGiocatoreById(giocatore.Id); 
-        StateHasChanged(); 
-    }
+	private async Task ResettaPersonaggio()
+	{
+		personaggio = null;
+		giocatore = await giocatoreService.GetGiocatoreById(giocatore.Id);
+		StateHasChanged();
+	}
 
-    private async Task Chiudi()
-    {
-        personaggio = null;
-        StateHasChanged();
-    }
+	private async Task Chiudi()
+	{
+		personaggio = null;
+		StateHasChanged();
+	}
 
-    private async Task EliminaPersonaggio(Personaggio personaggio)
-    {
-        await personaggioService.EliminaPersonaggio(personaggio); 
-        StateHasChanged(); 
-    }
+	private async Task EliminaPersonaggio(Personaggio personaggio)
+	{
+		await personaggioService.EliminaPersonaggio(personaggio);
+		StateHasChanged();
+	}
 }

@@ -41,7 +41,17 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             {
                 using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    giocatore = await db.Giocatori.Where(x => x.Nome.ToLower() == nome.ToLower()).Include(x => x.Personaggi).FirstOrDefaultAsync();
+                    giocatore = await db.Giocatori.Where(x => x.Nome.ToLower() == nome.ToLower())
+                                                  .Include(x => x.Personaggi)
+                                                  .ThenInclude(x => x.Sessione)
+                                                  .FirstOrDefaultAsync();
+                    if (giocatore != null && giocatore.IsAdmin)
+                    {
+                        foreach (Personaggio p in db.Personaggi.Include(x => x.Sessione).Where(x => x.GiocatoreId != giocatore.Id))
+                        {
+                            giocatore.Personaggi.Add(p);
+                        }
+                    }
                 }
             }
             return giocatore;
@@ -54,10 +64,10 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             {
                 using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    giocatore = await db.Giocatori.Where(x => x.Id == idGiocatore).Include(x => x.Personaggi).FirstOrDefaultAsync();
+                    giocatore = await db.Giocatori.Where(x => x.Id == idGiocatore).Include(x => x.Personaggi).ThenInclude(x => x.Sessione).FirstOrDefaultAsync();
                     if (giocatore != null && giocatore.IsAdmin)
                     {
-                        foreach(Personaggio p in db.Personaggi.Where(x => x.GiocatoreId != giocatore.Id))
+                        foreach(Personaggio p in db.Personaggi.Include(x => x.Sessione).Where(x => x.GiocatoreId != giocatore.Id))
                         {
                             giocatore.Personaggi.Add(p);
                         }

@@ -57,7 +57,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             {
                 using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    Personaggi = await db.Personaggi.ToListAsync();
+                    Personaggi = await db.Personaggi.Include(x => x.Sessione).ToListAsync();
                 }
             }
             return Personaggi;

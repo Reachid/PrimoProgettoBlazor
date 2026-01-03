@@ -1,0 +1,14 @@
+﻿<RadzenMenu class="w-100" Responsive="true" >
+	<RadzenMenuItem Text="Schede" Path="/"/>
+	<RadzenMenuItem Text="Abilità" Path="/Abilita" />
+	<RadzenMenuItem Text="Perks" Path="/Perk" />
+	<RadzenMenuItem Text="Keywords" Path="/Keywords" />
+
+	<RadzenMenuItem Text="Sessioni" Path="/Sessioni" Visible="@giocatore.IsAdmin" />
+	<RadzenMenuItem Text="Giocatori" Path="/Giocatori" Visible="@giocatore.IsAdmin" />
+	<RadzenMenuItem Text="Categorie" Path="/CategorieKeywords" Visible="@giocatore.IsAdmin" />
+</RadzenMenu>
+
+@code {
+	[CascadingParameter] public Giocatore giocatore { get; set; } = new Giocatore();
+}

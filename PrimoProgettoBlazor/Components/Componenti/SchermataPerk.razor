@@ -1,0 +1,97 @@
+﻿@inject DialogService dialog
+@inject IPerkService perkService
+<RadzenPanel Text="@Titolo" AllowCollapse="@Collapsable" class="w-100 rz-pb-2">
+	<RadzenRow class="rz-pb-2">
+		<PerkSelector PerkTotali="@PerkTotali" Positivo="@IsAbilità" OnInserisciAbilità="InserisciAbilità" />
+	</RadzenRow>
+	@foreach (AttaccoPerk singola in Perk.Where(x => x.Perk.IsAbilità == IsAbilità))
+	{
+		<RadzenRow class="rz-pb-2">
+			<RadzenColumn Size="4">
+				<RadzenText class="w-100">@(singola.Perk.Nome + $" ({(IsAbilità ? "+" : "-")}{singola.Perk.Punteggio})")</RadzenText>
+			</RadzenColumn>
+			<RadzenColumn Size="4">
+				@if (!singola.Modifica)
+				{
+					<RadzenText class="w-100">@(singola.Punteggio * singola.Perk.Punteggio)</RadzenText>
+				}
+				else
+				{
+					<RadzenNumeric class="w-100" @bind-Value="@singola.Punteggio" />
+				}
+			</RadzenColumn>
+			<RadzenColumn Size="4">
+				<RadzenRow>
+					<RadzenColumn Size="12">
+						@if (!singola.Modifica)
+						{
+							<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Warning" class="w-100" Click="x => singola.Modifica = true" />
+						}
+						else
+						{
+							<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" class="w-100" Click="x => singola.Modifica = false" />
+						}
+					</RadzenColumn>
+					<RadzenColumn Size="12">
+						<RadzenButton Icon="menu" ButtonStyle="ButtonStyle.Primary" Click="x => VisualizzaDescrizione(singola.Perk)" class="w-100" />
+					</RadzenColumn>
+					<RadzenColumn Size="12">
+						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="x => EliminaAbilità(singola)" class="w-100" />
+					</RadzenColumn>
+				</RadzenRow>
+			</RadzenColumn>
+		</RadzenRow>
+	}
+</RadzenPanel>
+
+@code {
+	[Parameter] public string Titolo { get; set; }
+	[Parameter] public ICollection<AttaccoPerk> Perk { get; set; }
+	[Parameter] public EventCallback<ICollection<AttaccoPerk>> PerkChanged { get; set; }
+	[Parameter] public bool IsAbilità { get; set; } = true; 
+	[Parameter] public bool Collapsable { get; set; } = true; 
+	[Parameter] public EventCallback<AttaccoPerk> OnEliminaPerk { get; set; }
+	[Parameter] public EventCallback<AttaccoPerk> OnInserisciPerk { get; set; }
+	
+	List<Perk> PerkTotali = new List<Perk>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		PerkTotali = await perkService.GetPerks();
+	}
+
+	private async Task ChangePunteggio(AttaccoPerk abilitàPersonaggio, int punteggioNuovo)
+	{
+		abilitàPersonaggio.Punteggio = punteggioNuovo; 
+		await PerkChanged.InvokeAsync(Perk); 
+	}
+
+	private async Task VisualizzaDescrizione(Perk perk)
+	{
+		await dialog.OpenAsync<SchedaAbilità>(perk.Nome, new Dictionary<string, object>()
+		{
+			{"Abilità", perk}
+		}, new DialogOptions()
+		{
+			Width = "100vw",
+			Height = "100vh", 
+			ShowClose = true
+		});
+	}
+
+	private async Task EliminaAbilità(AttaccoPerk quale)
+	{
+		if (OnEliminaPerk.HasDelegate)
+		{
+			await OnEliminaPerk.InvokeAsync(quale);
+		}
+	}
+
+	private void InserisciAbilità(AttaccoPerk attaccoPerk)
+	{
+		if (OnInserisciPerk.HasDelegate)
+		{
+			OnInserisciPerk.InvokeAsync(attaccoPerk);
+		}
+	}
+}

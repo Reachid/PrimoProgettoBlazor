@@ -11,6 +11,8 @@ namespace PrimoProgettoBlazor.Components.Classi.Entities
         public int Roll { get; set; } = 0;
         public int Moltiplicatore { get; set; } = 0;
         public string Vigore { get; set; } = "";
+        public string Affinità { get; set; } = "";
+        public string Descrizione { get; set; } = "";
         public int PersonaggioId { get; set; } = 0;
         public Personaggio Personaggio { get; set; } = new Personaggio();
         [NotMapped]

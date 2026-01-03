@@ -73,6 +73,8 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                     Personaggio = await db.Personaggi.Include(ap => ap.Abilità)
                                                      .ThenInclude(x => x.Abilità)
                                                      .Include(at => at.Attacchi)
+                                                     .ThenInclude(at => at.AttacchiPerks)
+                                                     .ThenInclude(at => at.Perk)
                                                      .Include(AT => AT.Sessione)
                                                      .Include(at => at.Giocatore)
                                                      .Where(x => x.Id == idPersonaggio)
@@ -120,6 +122,40 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                             {
                                 db.Entry(ap).State = EntityState.Added;
                                 db.AbilitàPersonaggi.Add(ap);
+                            }
+                        }
+
+                        foreach(Attacco attacco in personaggio.Attacchi)
+                        {
+                            db.Entry(attacco.Personaggio).State = EntityState.Unchanged;
+                            attacco.PersonaggioId = personaggio.Id;
+
+                            if (attacco.IdAttacco == 0)
+                            {
+                                db.Entry(attacco).State = EntityState.Added;
+                                db.Attacchi.Add(attacco);
+                            }
+                            else
+                            {
+                                db.Entry(attacco).State = EntityState.Modified;
+                                db.Attacchi.Update(attacco);
+                            }
+
+                            await db.SaveChangesAsync();                            
+
+                            foreach(AttaccoPerk ap in attacco.AttacchiPerks)
+                            {
+                                db.Entry(ap).State = EntityState.Unchanged;
+                                db.Entry(ap.Perk).State = EntityState.Unchanged;
+                                ap.AttaccoId = attacco.IdAttacco; 
+                                if(db.AttacchiPerks.Any(x => x.AttaccoId == ap.AttaccoId && x.PerkId == ap.PerkId))
+                                {
+                                    db.AttacchiPerks.Update(ap); 
+                                }
+                                else
+                                {
+                                    db.AttacchiPerks.Add(ap); 
+                                }
                             }
                         }
                         await db.SaveChangesAsync();

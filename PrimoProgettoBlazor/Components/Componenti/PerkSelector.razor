@@ -1,4 +1,5 @@
-﻿<RadzenColumn Size="12" SizeMD="8">
+﻿@inject NotificationService notify
+<RadzenColumn Size="12" SizeMD="8">
 	<RadzenFormField Text="Nome Abilità" Variant="Variant.Outlined" class="w-100">
 		<RadzenDropDown Data="@PerkFiltrate"
 						AllowFiltering="true"
@@ -18,7 +19,7 @@
 </RadzenColumn>
 
 @code {
-	[Parameter] public List<Perk> PerkTotali { get; set; } = new List<Perk>(); 
+	[Parameter] public List<Perk> PerkTotali { get; set; } = new List<Perk>();
 	[Parameter] public EventCallback<AttaccoPerk> OnInserisciAbilità { get; set; }
 	[Parameter] public bool Positivo { get; set; }
 
@@ -38,6 +39,12 @@
 	{
 		if (OnInserisciAbilità.HasDelegate)
 		{
+			if (PerkAttacco.Perk == null)
+			{
+				notify.Notify(NotificationSeverity.Error, "Nessuna Perk Inserita", "Errore durante l'inserimento della Perk", 3000); 
+				return;
+			}
+			PerkAttacco.PerkId = PerkAttacco.Perk.Id;
 			OnInserisciAbilità.InvokeAsync(PerkAttacco);
 			PerkAttacco = new AttaccoPerk();
 		}

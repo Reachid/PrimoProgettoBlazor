@@ -24,6 +24,7 @@ builder.Services.AddScoped<IGiocatoreService,GiocatoreService>();
 builder.Services.AddScoped<IPerkService,PerkService>();
 builder.Services.AddScoped<ICategoriaKeywordService,CategoriaKeywordService>();
 builder.Services.AddScoped<IKeywordService,KeywordService>();
+builder.Services.AddScoped<IAttaccoPerkService,AttaccoPerkService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

@@ -143,8 +143,7 @@
 	{
 		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa abilità?", "Eliminazione abilità", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
 		if (result.HasValue && result.Value)
-		{
-			
+		{	
 			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale); 
 			personaggio.Abilità.Remove(quale);
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Abilità eliminata!", Duration = 3000 });

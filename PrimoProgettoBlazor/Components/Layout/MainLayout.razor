@@ -60,6 +60,9 @@ else
     private async Task CercaGiocatore()
     {
         giocatore = await giocatoreService.GetGiocatoreByName(nome); 
-        await js.InvokeVoidAsync("writeLocalStorage", giocatore.Id); 
+        if (giocatore != null)
+        {
+            await js.InvokeVoidAsync("writeLocalStorage", giocatore.Id);
+        }
     }
 }

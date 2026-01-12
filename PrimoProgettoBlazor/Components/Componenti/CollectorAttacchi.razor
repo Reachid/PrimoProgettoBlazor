@@ -96,14 +96,17 @@
 	public async Task InserisciAttacco()
 	{
 		string result = await dialog.OpenAsync<SchedaNomeAttacco>("Nuovo attacco");
-		Attacco nuovo = new Attacco()
-			{
-				Nome = result,
-				InModifica = true,
-				Personaggio = personaggio,
-				PersonaggioId = personaggio.Id
-			};
-		personaggio.Attacchi.Add(nuovo);
+		if (!string.IsNullOrEmpty(result))
+		{
+			Attacco nuovo = new Attacco()
+				{
+					Nome = result,
+					InModifica = true,
+					Personaggio = personaggio,
+					PersonaggioId = personaggio.Id
+				};
+			personaggio.Attacchi.Add(nuovo);
+		}
 	}
 
 	private void InserisciAbilità(AttaccoPerk attaccoPerk, Attacco attacco)

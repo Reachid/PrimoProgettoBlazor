@@ -1,10 +1,16 @@
-﻿<RadzenColumn Size="12" SizeMD="8">
+﻿@using System.Linq.Dynamic.Core
+<RadzenColumn Size="12" SizeMD="8">
 	<RadzenFormField Text="Nome Abilità" Variant="Variant.Outlined" class="w-100">
 		<RadzenDropDown Data="@AbilitàFiltrate"
+						LoadData="LoadData"
+						Count="count"
 						AllowFiltering ="true"
-						FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
 						@bind-Value="@abilitàPersonaggio.Abilità"
 						TextProperty="@(nameof(Abilità.Nome))"
+						AllowVirtualization="true"
+						FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+						FilterOperator="StringFilterOperator.Contains" 
+						AllowClear="true"
 						class="w-100" />
 	</RadzenFormField>
 </RadzenColumn>
@@ -23,15 +29,38 @@
 	[Parameter] public bool Positivo { get; set; }
 
 	AbilitàPersonaggio abilitàPersonaggio = new AbilitàPersonaggio();
-	List<Abilità> AbilitàFiltrate = new List<Abilità>();
-
+	List<Abilità> AbilitàFiltrate = null; 
+	int count = 0; 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (!AbilitàFiltrate.Any() && AbilitàTotali.Any())
+	// 	if (!AbilitàFiltrate.Any() && AbilitàTotali.Any())
+	// 	{
+	// 		AbilitàFiltrate = AbilitàTotali.Where(x => x.IsAbilità == Positivo).ToList();
+	// 		StateHasChanged();
+	// 	}
+	}
+
+	private void LoadData(LoadDataArgs args)
+	{
+		var query = AbilitàTotali.Where(x => x.IsAbilità == Positivo).AsQueryable(); 
+		if (!string.IsNullOrEmpty(args.Filter))
 		{
-			AbilitàFiltrate = AbilitàTotali.Where(x => x.IsAbilità == Positivo).ToList();
-			StateHasChanged();
+			query = query.Where(args.Filter); 
 		}
+		if(args.Skip != null)
+		{
+			query = query.Skip(args.Skip.Value); 
+		}
+		if(args.Top != null)
+		{
+			query = query.Take(args.Top.Value);
+		}
+		else
+		{
+			query.Take(10); 
+		}
+		count = query.Count(); 
+		AbilitàFiltrate = query.ToList(); 
 	}
 
 	public void InserisciAbilità()

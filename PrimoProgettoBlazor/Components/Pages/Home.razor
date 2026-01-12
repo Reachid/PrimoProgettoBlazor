@@ -73,6 +73,19 @@ else
 		else
 		{
 			personaggio = await personaggioService.GetPersonaggioById(quale.Id);
+			// await dialog.OpenAsync<SchedaPersonaggio>("Nuovo personaggio", new Dictionary<string, object>()
+			// {
+			// 	{"personaggio", personaggio}, 
+			// 	{"OnSalva", EventCallback.Factory.Create(this, ResettaPersonaggio)}, 
+			// 	{"OnClose", EventCallback.Factory.Create(this, Chiudi)}
+			// }, new DialogOptions()
+			// {
+			// 	Width = "100vw",
+			// 	Height = "100vh",
+			// 	Resizable = false,
+			// 	Draggable = false,
+			// 	CloseDialogOnOverlayClick = false
+			// }); 
 		}
 	}
 

@@ -3,6 +3,7 @@
 @inject IPersonaggioService personaggioService
 @inject IGiocatoreService giocatoreService
 @inject DialogService dialog
+@inject IJSRuntime js
 
 @if (personaggio == null)
 {
@@ -32,19 +33,16 @@
 		}
 	</RadzenRow>
 	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda(new Personaggio())" Icon="add" />
-}
+} 
 else
 {
 	<SchedaPersonaggio personaggio="personaggio" OnSalva="ResettaPersonaggio" OnClose="@(() => personaggio = null)" />
 }
 
-
-
 @code {
 	List<Personaggio> Personaggi = new List<Personaggio>();
 	[CascadingParameter]
-	public Giocatore giocatore { get; set; } = new Giocatore();
-
+	public Giocatore giocatore { get; set; } = new Giocatore(); 
 	Personaggio? personaggio = null;
 
 	private async Task ApriScheda(Personaggio quale)
@@ -73,19 +71,6 @@ else
 		else
 		{
 			personaggio = await personaggioService.GetPersonaggioById(quale.Id);
-			// await dialog.OpenAsync<SchedaPersonaggio>("Nuovo personaggio", new Dictionary<string, object>()
-			// {
-			// 	{"personaggio", personaggio}, 
-			// 	{"OnSalva", EventCallback.Factory.Create(this, ResettaPersonaggio)}, 
-			// 	{"OnClose", EventCallback.Factory.Create(this, Chiudi)}
-			// }, new DialogOptions()
-			// {
-			// 	Width = "100vw",
-			// 	Height = "100vh",
-			// 	Resizable = false,
-			// 	Draggable = false,
-			// 	CloseDialogOnOverlayClick = false
-			// }); 
 		}
 	}
 

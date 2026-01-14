@@ -1,74 +1,77 @@
 ﻿@using System.Linq.Dynamic.Core
 <RadzenColumn Size="12" SizeMD="8">
-	<RadzenFormField Text="Nome Abilità" Variant="Variant.Outlined" class="w-100">
-		<RadzenDropDown Data="@AbilitàFiltrate"
-						LoadData="LoadData"
-						Count="count"
-						AllowFiltering ="true"
-						@bind-Value="@abilitàPersonaggio.Abilità"
-						TextProperty="@(nameof(Abilità.Nome))"
-						AllowVirtualization="true"
-						FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-						FilterOperator="StringFilterOperator.Contains" 
-						AllowClear="true"
-						class="w-100" />
-	</RadzenFormField>
+    <RadzenFormField Text="Nome Abilità" Variant="Variant.Outlined" class="w-100">
+        <RadzenDropDown Data="@AbilitàFiltrate"
+                        LoadData="LoadData"
+                        Count="count"
+                        AllowFiltering="true"
+                        @bind-Value="@abilitàPersonaggio.Abilità"
+                        AllowVirtualization="true"
+                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                        FilterOperator="StringFilterOperator.Contains"
+                        AllowClear="true">
+                        <Template Context="singolo">
+                            @singolo.Nome
+                        </Template>
+        </RadzenDropDown>
+    </RadzenFormField>
 </RadzenColumn>
 <RadzenColumn Size="12" SizeMD="2">
-	<RadzenFormField Text="Punteggio" Variant="Variant.Outlined" class="w-100">
-		<RadzenNumeric @bind-Value="@abilitàPersonaggio.Punteggio" class="w-100" />
-	</RadzenFormField>
+    <RadzenFormField Text="Punteggio" Variant="Variant.Outlined" class="w-100">
+        <RadzenNumeric @bind-Value="@abilitàPersonaggio.Punteggio" class="w-100" />
+    </RadzenFormField>
 </RadzenColumn>
 <RadzenColumn Size="12" SizeMD="2">
-	<RadzenButton Icon="add" ButtonStyle="ButtonStyle.Primary" Click="InserisciAbilità" class="w-100 h-100" />
+    <RadzenButton Icon="add" ButtonStyle="ButtonStyle.Primary" Click="InserisciAbilità" class="w-100 h-100" />
 </RadzenColumn>
 
 @code {
-	[Parameter] public List<Abilità> AbilitàTotali { get; set; }
-	[Parameter] public EventCallback<AbilitàPersonaggio> OnInserisciAbilità { get; set; }
-	[Parameter] public bool Positivo { get; set; }
+    [Parameter] public List<Abilità> AbilitàTotali { get; set; }
+    [Parameter] public EventCallback<AbilitàPersonaggio> OnInserisciAbilità { get; set; }
+    [Parameter] public bool Positivo { get; set; }
 
-	AbilitàPersonaggio abilitàPersonaggio = new AbilitàPersonaggio();
-	List<Abilità> AbilitàFiltrate = null; 
-	int count = 0; 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-	// 	if (!AbilitàFiltrate.Any() && AbilitàTotali.Any())
-	// 	{
-	// 		AbilitàFiltrate = AbilitàTotali.Where(x => x.IsAbilità == Positivo).ToList();
-	// 		StateHasChanged();
-	// 	}
-	}
+    AbilitàPersonaggio abilitàPersonaggio = new AbilitàPersonaggio();
+    List<Abilità> AbilitàFiltrate = new List<Abilità>();
+    int count = 0;
 
-	private void LoadData(LoadDataArgs args)
-	{
-		var query = AbilitàTotali.Where(x => x.IsAbilità == Positivo).AsQueryable(); 
-		if (!string.IsNullOrEmpty(args.Filter))
-		{
-			query = query.Where(args.Filter); 
-		}
-		if(args.Skip != null)
-		{
-			query = query.Skip(args.Skip.Value); 
-		}
-		if(args.Top != null)
-		{
-			query = query.Take(args.Top.Value);
-		}
-		else
-		{
-			query.Take(10); 
-		}
-		count = query.Count(); 
-		AbilitàFiltrate = query.ToList(); 
-	}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AbilitàFiltrate = AbilitàTotali;
+            StateHasChanged();
+        }
+    }
 
-	public void InserisciAbilità()
-	{
-		if (OnInserisciAbilità.HasDelegate)
-		{
-			OnInserisciAbilità.InvokeAsync(abilitàPersonaggio);
-			abilitàPersonaggio = new AbilitàPersonaggio();
-		}
-	}
+    private void LoadData(LoadDataArgs args)
+    {
+        var query = AbilitàTotali.Where(x => x.IsAbilità == Positivo).AsQueryable();
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            query = query.Where(args.Filter);
+        }
+        if (args.Skip != null)
+        {
+            query = query.Skip(args.Skip.Value);
+        }
+        if (args.Top != null)
+        {
+            query = query.Take(args.Top.Value);
+        }
+        else
+        {
+            query.Take(10);
+        }
+        count = query.Count();
+        AbilitàFiltrate = query.ToList();
+    }
+
+    public void InserisciAbilità()
+    {
+        if (OnInserisciAbilità.HasDelegate)
+        {
+            OnInserisciAbilità.InvokeAsync(abilitàPersonaggio);
+            abilitàPersonaggio = new AbilitàPersonaggio();
+        }
+    }
 }

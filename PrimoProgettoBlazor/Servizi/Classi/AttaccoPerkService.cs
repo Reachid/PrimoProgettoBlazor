@@ -6,7 +6,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
 {
     public class AttaccoPerkService : IAttaccoPerkService
     {
-        IServiceScopeFactory factory; 
+        IServiceScopeFactory factory;
         public AttaccoPerkService(IServiceScopeFactory factory)
         {
             this.factory = factory;
@@ -19,8 +19,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Entry(quale.Perk).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged;
-                        db.Entry(quale.Attacco).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged;
+                        db.Attach(quale);
                         db.AttacchiPerks.Remove(quale);
                         await db.SaveChangesAsync();
                         return "";
@@ -29,7 +28,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             }
             catch (Exception ex)
             {
-                return ex.Message; 
+                return ex.Message;
             }
         }
 
@@ -41,15 +40,14 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Entry(quale.Perk).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged;
-                        db.Entry(quale.Attacco).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged; 
+                        db.Attach(quale);
                         if (db.AttacchiPerks.Any(x => x.AttaccoId == quale.AttaccoId && x.PerkId == quale.PerkId))
                         {
                             db.AttacchiPerks.Update(quale);
                         }
                         else
                         {
-                            db.AttacchiPerks.Add(quale); 
+                            db.AttacchiPerks.Add(quale);
                         }
                         await db.SaveChangesAsync();
                         return "";

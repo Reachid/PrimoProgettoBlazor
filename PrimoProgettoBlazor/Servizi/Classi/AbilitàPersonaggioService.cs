@@ -7,10 +7,10 @@ namespace PrimoProgettoBlazor.Servizi.Classi
 {
     public class AbilitàPersonaggioService : IAbilitàPersonaggioService
     {
-        IServiceScopeFactory serviceScopeFactory; 
+        IServiceScopeFactory serviceScopeFactory;
         public AbilitàPersonaggioService(IServiceScopeFactory serviceScopeFactory)
         {
-            this.serviceScopeFactory = serviceScopeFactory; 
+            this.serviceScopeFactory = serviceScopeFactory;
         }
 
         public async Task<string> EliminaAbilitàPersonaggio(AbilitàPersonaggio abilitàPersonaggio)
@@ -22,8 +22,8 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Entry(abilitàPersonaggio.Abilità).State = EntityState.Unchanged; 
-                        db.AbilitàPersonaggi.Remove(abilitàPersonaggio); 
+                        db.Attach(abilitàPersonaggio);
+                        db.AbilitàPersonaggi.Remove(abilitàPersonaggio);
                         await db.SaveChangesAsync();
                     }
                 }
@@ -40,12 +40,12 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             List<AbilitàPersonaggio> result = new List<AbilitàPersonaggio>();
             using (var scope = serviceScopeFactory.CreateScope())
             {
-                using(BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
+                using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    result = await db.AbilitàPersonaggi.ToListAsync(); 
+                    result = await db.AbilitàPersonaggi.ToListAsync();
                 }
             }
-            return result; 
+            return result;
         }
 
         public async Task<List<AbilitàPersonaggio>> GetAbilitàPersonaggioByPersonaggioId(int PersonaggioId)
@@ -70,7 +70,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        AbilitàPersonaggio? copia = db.AbilitàPersonaggi.FirstOrDefault(x => x.PersonaggioId == abilitàPersonaggio.PersonaggioId && x.AbilitàIdAbilità == abilitàPersonaggio.AbilitàIdAbilità); 
+                        AbilitàPersonaggio? copia = db.AbilitàPersonaggi.FirstOrDefault(x => x.PersonaggioId == abilitàPersonaggio.PersonaggioId && x.AbilitàIdAbilità == abilitàPersonaggio.AbilitàIdAbilità);
                         if (copia == null)
                         {
                             db.AbilitàPersonaggi.Add(abilitàPersonaggio);
@@ -85,9 +85,9 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             }
             catch (Exception ex)
             {
-                errore = ex.Message; 
+                errore = ex.Message;
             }
-            return errore; 
+            return errore;
         }
     }
 }

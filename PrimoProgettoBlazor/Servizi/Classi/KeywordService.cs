@@ -1,13 +1,12 @@
 ﻿using PrimoProgettoBlazor.Components.Classi;
 using PrimoProgettoBlazor.Components.Classi.Entities;
 using PrimoProgettoBlazor.Servizi.Interfacce;
-using Microsoft.EntityFrameworkCore; 
 
 namespace PrimoProgettoBlazor.Servizi.Classi
 {
     public class KeywordService : IKeywordService
     {
-        IServiceScopeFactory factory; 
+        IServiceScopeFactory factory;
         public KeywordService(IServiceScopeFactory factory)
         {
             this.factory = factory;
@@ -21,11 +20,8 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        if (keyword.CategoriaKeyword != null)
-                        {
-                            db.Entry(keyword.CategoriaKeyword).State = EntityState.Unchanged;
-                        }
-                        db.Keywords.Remove(keyword); 
+                        db.Attach(keyword);
+                        db.Keywords.Remove(keyword);
                         await db.SaveChangesAsync();
                     }
                 }
@@ -45,25 +41,21 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             {
                 using (var scope = factory.CreateScope())
                 {
-                    using(BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
+                    using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        if(keyword.CategoriaKeyword != null)
-                        {
-                            db.Entry(keyword.CategoriaKeyword).State = EntityState.Unchanged;
-                        }
-
+                        db.Attach(keyword);
                         if (keyword.Id == 0)
                         {
-                            db.Keywords.Add(keyword); 
+                            db.Keywords.Add(keyword);
                         }
                         else
                         {
-                            db.Keywords.Update(keyword); 
+                            db.Keywords.Update(keyword);
                         }
-                        await db.SaveChangesAsync(); 
+                        await db.SaveChangesAsync();
                     }
                 }
-                return errore; 
+                return errore;
             }
             catch (Exception ex)
             {

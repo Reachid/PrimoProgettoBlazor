@@ -33,11 +33,11 @@
 	</RadzenRow>
 	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda(new Personaggio())" Icon="add" />
 }
-@* else
+else
 {
 	<SchedaPersonaggio personaggio="personaggio" OnSalva="ResettaPersonaggio" OnClose="@(() => personaggio = null)" />
 }
- *@
+
 
 
 @code {
@@ -75,19 +75,6 @@
 			personaggio = await personaggioService.GetPersonaggioById(quale.Id);
 			
 		}
-		await dialog.OpenAsync<SchedaPersonaggio>("Nuovo personaggio", new Dictionary<string, object>()
-			{
-				{"personaggio", personaggio},
-				{"OnSalva", EventCallback.Factory.Create(this, ResettaPersonaggio)},
-				{"OnClose", EventCallback.Factory.Create(this, Chiudi)}
-			}, new DialogOptions()
-			{
-				Width = "100vw",
-				Height = "100vh",
-				Resizable = false,
-				Draggable = false,
-				CloseDialogOnOverlayClick = false
-			});
 	}
 
 	private async Task ResettaPersonaggio()

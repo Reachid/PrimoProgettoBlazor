@@ -6,7 +6,9 @@ namespace PrimoProgettoBlazor.Servizi.Interfacce
     {
         public Task<List<Personaggio>> GetPersonaggi();
         public Task<Personaggio?> GetPersonaggioById(int idPersonaggio);
-        public Task<string> SalvaPersonaggio(Personaggio personaggio); 
+        public Task<string> SalvaPersonaggio(Personaggio personaggio);
         public Task<string> EliminaPersonaggio(Personaggio personaggio);
+        public Task<string> EliminaAttacco(Attacco attacco);
+        public Task<string> ModificaAttacco(Attacco attacco);
     }
 }

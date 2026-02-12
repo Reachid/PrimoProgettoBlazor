@@ -98,5 +98,49 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             }
             return errore;
         }
+
+        public async Task<string> ModificaAttacco(Attacco attacco)
+        {
+            string errore = "";
+            try
+            {
+                using (var scope = serviceScopeFactory.CreateScope())
+                {
+                    using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
+                    {
+                        db.Attach(attacco);
+                        db.Attacchi.Update(attacco);
+                        await db.SaveChangesAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errore = ex.Message;
+            }
+            return errore;
+        }
+
+        public async Task<string> EliminaAttacco(Attacco attacco)
+        {
+            string errore = "";
+            try
+            {
+                using (var scope = serviceScopeFactory.CreateScope())
+                {
+                    using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
+                    {
+                        db.Attach(attacco);
+                        db.Attacchi.Remove(attacco);
+                        await db.SaveChangesAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errore = ex.Message;
+            }
+            return errore;
+        }
     }
 }

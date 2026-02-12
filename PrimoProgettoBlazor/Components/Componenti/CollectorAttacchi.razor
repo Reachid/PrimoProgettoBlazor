@@ -1,6 +1,7 @@
 ﻿@inject DialogService dialog
 @inject IPerkService perkService
 @inject IAttaccoPerkService attaccoPerkService
+@inject IPersonaggioService PersonaggioService
 @inject NotificationService notify
 
 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.End" class="rz-mb-2">
@@ -47,10 +48,10 @@
 						}
 					</RadzenColumn>
 					<RadzenColumn Size="12">
-						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(() => attacco.InModifica = false)" class="w-100 h-100" />
+						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(x => EliminaAttacco(attacco))" class="w-100 h-100" />
 					</RadzenColumn>
 					<RadzenColumn Size="12">
-						<RadzenButton Text="Cambia nome" ButtonStyle="ButtonStyle.Primary" Click="@(() => attacco.InModifica = false)" class="w-100 h-100" />
+						<RadzenButton Text="Cambia nome" ButtonStyle="ButtonStyle.Primary" Click="@(x => ModificaNomeAttacco(attacco))" class="w-100 h-100" />
 					</RadzenColumn>
 				</RadzenRow>
 			</RadzenColumn>
@@ -109,6 +110,20 @@
 		}
 	}
 
+	public async Task ModificaNomeAttacco(Attacco a)
+	{
+		string result = await dialog.OpenAsync<SchedaNomeAttacco>("Modifica nome", 
+																new Dictionary<string, object>()
+																{ 
+																	{"nomeAttacco", a.Nome} 
+																});
+		if (!string.IsNullOrEmpty(result))
+		{
+			a.Nome = result; 
+			await PersonaggioService.ModificaAttacco(a); 
+		}
+	}
+
 	private void InserisciAbilità(AttaccoPerk attaccoPerk, Attacco attacco)
 	{
 
@@ -151,6 +166,18 @@
 			string errore = await attaccoPerkService.EliminaAttaccoPerk(attaccoPerk);
 			attacco.AttacchiPerks.Remove(attaccoPerk);
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk eliminata!", Duration = 3000 });
+			await InvokeAsync(StateHasChanged);
+		}
+	}
+
+	private async Task EliminaAttacco(Attacco quale)
+	{
+		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questo attacco?", "Eliminazione attacco", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
+		if (result.HasValue && result.Value)
+		{
+			personaggio.Attacchi.Remove(quale); 
+			await PersonaggioService.EliminaAttacco(quale); 
+			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Attacco eliminato!", Duration = 3000 });
 			await InvokeAsync(StateHasChanged);
 		}
 	}

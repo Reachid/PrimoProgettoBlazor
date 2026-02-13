@@ -9,7 +9,7 @@ namespace PrimoProgettoBlazor.Components.Classi.Entities
         public int AttaccoId { get; set; }
         public Attacco Attacco { get; set; }
         public int PerkId { get; set; }
-        public Perk Perk { get; set; }
+        public Perk Perk { get; set; } = new Perk(); 
         public int Punteggio { get; set; }
 
         [NotMapped]

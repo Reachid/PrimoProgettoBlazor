@@ -112,15 +112,15 @@
 
 	public async Task ModificaNomeAttacco(Attacco a)
 	{
-		string result = await dialog.OpenAsync<SchedaNomeAttacco>("Modifica nome", 
-																new Dictionary<string, object>()
-																{ 
-																	{"nomeAttacco", a.Nome} 
-																});
+		string result = await dialog.OpenAsync<SchedaNomeAttacco>("Modifica nome",
+						new Dictionary<string, object>()
+							{
+							{"nomeAttacco", a.Nome}
+							});
 		if (!string.IsNullOrEmpty(result))
 		{
-			a.Nome = result; 
-			await PersonaggioService.ModificaAttacco(a); 
+			a.Nome = result;
+			await PersonaggioService.ModificaAttacco(a);
 		}
 	}
 
@@ -128,7 +128,7 @@
 	{
 		if (a.InModifica)
 		{
-			
+
 		}
 	}
 
@@ -155,9 +155,9 @@
 	{
 		await dialog.OpenAsync<SchedaDescrizioneAttacco>(quale.Nome,
 			new Dictionary<string, object>()
-				{
+					{
 				{"Descrizione", quale.Descrizione }
-				},
+					},
 			new DialogOptions()
 				{
 					Width = "100vw",
@@ -183,8 +183,8 @@
 		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questo attacco?", "Eliminazione attacco", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
 		if (result.HasValue && result.Value)
 		{
-			personaggio.Attacchi.Remove(quale); 
-			await PersonaggioService.EliminaAttacco(quale); 
+			personaggio.Attacchi.Remove(quale);
+			await PersonaggioService.EliminaAttacco(quale);
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Attacco eliminato!", Duration = 3000 });
 			await InvokeAsync(StateHasChanged);
 		}

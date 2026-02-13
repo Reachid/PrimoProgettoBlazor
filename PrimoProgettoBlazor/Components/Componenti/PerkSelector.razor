@@ -5,7 +5,6 @@
 						AllowFiltering="true"
 						FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
 						@bind-Value="@PerkAttacco.Perk"
-						TextProperty="@(nameof(Perk.Nome))"
 						class="w-100" />
 	</RadzenFormField>
 </RadzenColumn>
@@ -31,22 +30,23 @@
 		if (!PerkFiltrate.Any() && PerkTotali.Any())
 		{
 			PerkFiltrate = PerkTotali.Where(x => x.IsAbilità == Positivo).ToList();
-			StateHasChanged();
+			await InvokeAsync(StateHasChanged);
 		}
 	}
 
-	public void InserisciAbilità()
+	public async Task InserisciAbilità()
 	{
 		if (OnInserisciAbilità.HasDelegate)
 		{
-			if (PerkAttacco.Perk == null)
+			if (PerkAttacco.Perk.Id == 0)
 			{
-				notify.Notify(NotificationSeverity.Error, "Nessuna Perk Inserita", "Errore durante l'inserimento della Perk", 3000); 
+				notify.Notify(NotificationSeverity.Error, "Nessuna Perk Inserita", "Errore durante l'inserimento della Perk", 3000);
 				return;
 			}
 			PerkAttacco.PerkId = PerkAttacco.Perk.Id;
-			OnInserisciAbilità.InvokeAsync(PerkAttacco);
+			await OnInserisciAbilità.InvokeAsync(PerkAttacco);
 			PerkAttacco = new AttaccoPerk();
+			await InvokeAsync(StateHasChanged);
 		}
 	}
 }

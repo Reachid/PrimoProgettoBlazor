@@ -87,11 +87,11 @@
 		}
 	}
 
-	private void InserisciAbilità(AttaccoPerk attaccoPerk)
+	private async Task InserisciAbilità(AttaccoPerk attaccoPerk)
 	{
 		if (OnInserisciPerk.HasDelegate)
 		{
-			OnInserisciPerk.InvokeAsync(attaccoPerk);
+			await OnInserisciPerk.InvokeAsync(attaccoPerk);
 		}
 	}
 }

@@ -70,8 +70,8 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        AbilitàPersonaggio? copia = db.AbilitàPersonaggi.FirstOrDefault(x => x.PersonaggioId == abilitàPersonaggio.PersonaggioId && x.AbilitàIdAbilità == abilitàPersonaggio.AbilitàIdAbilità);
-                        if (copia == null)
+                        //db.Attach(abilitàPersonaggio); Ci sono problemi con l'attach
+                        if (!db.AbilitàPersonaggi.Any(x => x.PersonaggioId == abilitàPersonaggio.PersonaggioId && x.AbilitàIdAbilità == abilitàPersonaggio.AbilitàIdAbilità))
                         {
                             db.AbilitàPersonaggi.Add(abilitàPersonaggio);
                         }

@@ -22,21 +22,22 @@
 			</RadzenColumn>
 			<RadzenColumn Size="4">
 				<RadzenRow>
-					<RadzenColumn Size="12">
+					<RadzenColumn Size="4">
 						@if (!singola.Modifica)
 						{
-							<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Warning" class="w-100" Click="x => singola.Modifica = true" />
+							<RadzenIcon Icon="edit" IconStyle="IconStyle.Warning" @onclick="@(x => singola.Modifica = true)" />
+
 						}
 						else
 						{
-							<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" class="w-100" Click="x => singola.Modifica = false" />
+							<RadzenIcon Icon="save" IconStyle="IconStyle.Primary" @onclick="@(async x => await ModificaAbilità(singola))" />
 						}
 					</RadzenColumn>
-					<RadzenColumn Size="12">
-						<RadzenButton Icon="menu" ButtonStyle="ButtonStyle.Primary" Click="x => VisualizzaDescrizione(singola.Perk)" class="w-100" />
+					<RadzenColumn Size="4">
+						<RadzenIcon Icon="menu" IconStyle="IconStyle.Primary" @onclick="@(x => VisualizzaDescrizione(singola.Perk))" />
 					</RadzenColumn>
-					<RadzenColumn Size="12">
-						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="x => EliminaAbilità(singola)" class="w-100" />
+					<RadzenColumn Size="4">
+						<RadzenIcon Icon="delete" IconStyle="IconStyle.Danger" @onclick="@(x => EliminaAbilità(singola))" />
 					</RadzenColumn>
 				</RadzenRow>
 			</RadzenColumn>
@@ -52,7 +53,8 @@
 	[Parameter] public bool Collapsable { get; set; } = true; 
 	[Parameter] public EventCallback<AttaccoPerk> OnEliminaPerk { get; set; }
 	[Parameter] public EventCallback<AttaccoPerk> OnInserisciPerk { get; set; }
-	
+	[Parameter] public EventCallback<AttaccoPerk> OnModificaPerk { get; set; }
+
 	List<Perk> PerkTotali = new List<Perk>();
 
 	protected override async Task OnInitializedAsync()
@@ -92,6 +94,15 @@
 		if (OnInserisciPerk.HasDelegate)
 		{
 			await OnInserisciPerk.InvokeAsync(attaccoPerk);
+		}
+	}
+
+	private async Task ModificaAbilità(AttaccoPerk attaccoPerk)
+	{
+		if (OnModificaPerk.HasDelegate)
+		{
+			attaccoPerk.Modifica = false; 
+			await OnModificaPerk.InvokeAsync(attaccoPerk);
 		}
 	}
 }

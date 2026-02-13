@@ -11,47 +11,50 @@
 {
 	<RadzenPanel Text="@attacco.Nome" AllowCollapse="@true" class="w-100 rz-mb-3">
 		<RadzenRow>
-			<RadzenColumn Size="12" SizeMD="6">
+			<RadzenColumn Size="9">
+				<RadzenFormField Text="Nome" class="w-100">
+					<RadzenTextBox @bind-Value="@attacco.Nome" Disabled="@(!attacco.InModifica)" />
+				</RadzenFormField>
+			</RadzenColumn>
+			<RadzenColumn Size="1">
+				@if (attacco.InModifica)
+				{
+					<RadzenIcon Icon="save" IconStyle="IconStyle.Primary" @onclick="@(x => ModificaAttacco(attacco))" />
+				}
+				else
+				{
+					<RadzenIcon Icon="edit" IconStyle="IconStyle.Warning" @onclick="@(x => attacco.InModifica = true)" />
+				}
+			</RadzenColumn>
+			<RadzenColumn Size="1">
+				<RadzenIcon Icon="delete" IconStyle="IconStyle.Danger" @onclick="@(x => EliminaAttacco(attacco))" />
+			</RadzenColumn>
+			<RadzenColumn Size="1">
+				<RadzenIcon Icon="book" IconStyle="IconStyle.Primary" @onclick="@(x => VisualizzaDescrizioneAttacco(attacco))" />
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenRow>
+			<RadzenColumn Size="12" SizeMD="12">
 				<RadzenRow>
-					<RadzenColumn Size="4" SizeMD="6">
+					<RadzenColumn Size="6" SizeMD="3">
 						<RadzenFormField Text="Roll" class="w-100">
 							<RadzenNumeric @bind-Value="@attacco.Roll" class="w-100" Disabled="@(!attacco.InModifica)" />
 						</RadzenFormField>
 					</RadzenColumn>
-					<RadzenColumn Size="4" SizeMD="6">
+					<RadzenColumn Size="6" SizeMD="3">
 						<RadzenFormField Text="Dx" class="w-100">
 							<RadzenNumeric @bind-Value="@attacco.Moltiplicatore" class="w-100" Disabled="@(!attacco.InModifica)" />
 						</RadzenFormField>
 					</RadzenColumn>
-					<RadzenColumn Size="4" SizeMD="6">
+					<RadzenColumn Size="6" SizeMD="3">
 						<RadzenFormField Text="Vigore" class="w-100">
 							<RadzenTextBox @bind-Value="@attacco.Vigore" class="w-100" Disabled="@(!attacco.InModifica)" />
 						</RadzenFormField>
 					</RadzenColumn>
-					<RadzenColumn Size="12" SizeMD="6">
+					<RadzenColumn Size="6" SizeMD="3">
 						<RadzenFormField Text="Affinità" class="w-100">
 							<RadzenTextBox @bind-Value="@attacco.Affinità" class="w-100" Disabled="@(!attacco.InModifica)" />
 						</RadzenFormField>
-					</RadzenColumn>
-				</RadzenRow>
-			</RadzenColumn>
-			<RadzenColumn Size="12" SizeMD="6">
-				<RadzenRow>
-					<RadzenColumn Size="12">
-						@if (attacco.InModifica)
-						{
-							<RadzenButton Icon="save" ButtonStyle="ButtonStyle.Primary" Click="@(() => attacco.InModifica = false)" class="w-100 h-100" />
-						}
-						else
-						{
-							<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Warning" Click="@(() => attacco.InModifica = true)" class="w-100 h-100" />
-						}
-					</RadzenColumn>
-					<RadzenColumn Size="12">
-						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(x => EliminaAttacco(attacco))" class="w-100 h-100" />
-					</RadzenColumn>
-					<RadzenColumn Size="12">
-						<RadzenButton Text="Cambia nome" ButtonStyle="ButtonStyle.Primary" Click="@(x => ModificaNomeAttacco(attacco))" class="w-100 h-100" />
 					</RadzenColumn>
 				</RadzenRow>
 			</RadzenColumn>
@@ -59,11 +62,9 @@
 		<RadzenRow>
 			<RadzenColumn Size="12">
 				<RadzenFieldset Text="Descrizione" class="w-100" AllowCollapse="true">
-					<RadzenTextArea @bind-Value="@attacco.Descrizione" class="w-100" Rows="15" Disabled="@(!attacco.InModifica)" />
+					<RadzenTextArea @bind-Value="@attacco.Descrizione" class="w-100" Rows="15" Visible="@(attacco.InModifica)" />
+					<RadzenText Text="@attacco.Descrizione" class="w-100" Visible="@(!attacco.InModifica)" />
 				</RadzenFieldset>
-			</RadzenColumn>
-			<RadzenColumn Size="12">
-				<RadzenButton ButtonStyle="ButtonStyle.Primary" Text="Visualizza descrizione" Click="x => VisualizzaDescrizioneAttacco(attacco)" class="w-100" />
 			</RadzenColumn>
 		</RadzenRow>
 		<RadzenRow>
@@ -72,6 +73,7 @@
 							   IsAbilità="true"
 							   OnInserisciPerk="x => InserisciAbilità(x, attacco)"
 							   OnEliminaPerk="x => EliminaPerk(x, attacco)"
+							   OnModificaPerk="x => ModificaPerk(x)"
 							   Collapsable="true"
 							   Titolo="Vantaggi" />
 			</RadzenColumn>
@@ -80,6 +82,7 @@
 							   IsAbilità="false"
 							   OnInserisciPerk="x => InserisciAbilità(x, attacco)"
 							   OnEliminaPerk="x => EliminaPerk(x, attacco)"
+							   OnModificaPerk="x => ModificaPerk(x)"
 							   Collapsable="true"
 							   Titolo="Svantaggi" />
 			</RadzenColumn>
@@ -96,43 +99,32 @@
 
 	public async Task InserisciAttacco()
 	{
-		string result = await dialog.OpenAsync<SchedaNomeAttacco>("Nuovo attacco");
-		if (!string.IsNullOrEmpty(result))
-		{
-			Attacco nuovo = new Attacco()
-				{
-					Nome = result,
-					InModifica = true,
-					Personaggio = personaggio,
-					PersonaggioId = personaggio.Id
-				};
-			personaggio.Attacchi.Add(nuovo);
-		}
+		Attacco nuovo = new Attacco()
+			{
+				Nome = "",
+				InModifica = true,
+				Personaggio = personaggio,
+				PersonaggioId = personaggio.Id
+			};
+		personaggio.Attacchi.Add(nuovo);
 	}
 
-	public async Task ModificaNomeAttacco(Attacco a)
+	public async Task ModificaPerk(AttaccoPerk ap)
 	{
-		string result = await dialog.OpenAsync<SchedaNomeAttacco>("Modifica nome",
-						new Dictionary<string, object>()
-							{
-							{"nomeAttacco", a.Nome}
-							});
-		if (!string.IsNullOrEmpty(result))
-		{
-			a.Nome = result;
-			await PersonaggioService.ModificaAttacco(a);
-		}
+		await attaccoPerkService.SalvaAttaccoPerk(ap);
+		notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk modificata con successo!", Duration = 3000 });
+		await InvokeAsync(StateHasChanged);
 	}
 
-	public async Task ModificaPerk(AttaccoPerk ap, Attacco a)
+	public async Task ModificaAttacco(Attacco a)
 	{
-		if (a.InModifica)
-		{
-
-		}
+		a.InModifica = false;
+		await PersonaggioService.ModificaAttacco(a);
+		notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Attacco modificato con successo!", Duration = 3000 });
+		await InvokeAsync(StateHasChanged);
 	}
 
-	private void InserisciAbilità(AttaccoPerk attaccoPerk, Attacco attacco)
+	private async Task InserisciAbilità(AttaccoPerk attaccoPerk, Attacco attacco)
 	{
 
 		if (attaccoPerk.Perk == null || attaccoPerk.Perk.Id == 0)
@@ -146,18 +138,21 @@
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Warning, Summary = "Questa perk esiste già!" });
 			return;
 		}
+
 		attaccoPerk.Attacco = attacco;
 		attaccoPerk.AttaccoId = attacco.IdAttacco;
-		attacco.AttacchiPerks.Add(attaccoPerk);
+		string errore = await attaccoPerkService.SalvaAttaccoPerk(attaccoPerk);
+		notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk aggiunta con successo!", Duration = 3000 });
+		await InvokeAsync(StateHasChanged);
 	}
 
 	private async Task VisualizzaDescrizioneAttacco(Attacco quale)
 	{
 		await dialog.OpenAsync<SchedaDescrizioneAttacco>(quale.Nome,
 			new Dictionary<string, object>()
-					{
+											{
 				{"Descrizione", quale.Descrizione }
-					},
+											},
 			new DialogOptions()
 				{
 					Width = "100vw",
@@ -172,7 +167,6 @@
 		if (result.HasValue && result.Value)
 		{
 			string errore = await attaccoPerkService.EliminaAttaccoPerk(attaccoPerk);
-			attacco.AttacchiPerks.Remove(attaccoPerk);
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk eliminata!", Duration = 3000 });
 			await InvokeAsync(StateHasChanged);
 		}
@@ -183,7 +177,6 @@
 		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questo attacco?", "Eliminazione attacco", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
 		if (result.HasValue && result.Value)
 		{
-			personaggio.Attacchi.Remove(quale);
 			await PersonaggioService.EliminaAttacco(quale);
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Attacco eliminato!", Duration = 3000 });
 			await InvokeAsync(StateHasChanged);

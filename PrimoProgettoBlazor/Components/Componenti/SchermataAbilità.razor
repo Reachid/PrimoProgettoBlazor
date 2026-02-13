@@ -23,18 +23,18 @@
 			<RadzenColumn Size="2">
 				@if (!singola.Modifica)
 				{
-					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Warning" class="w-100" Click="x => singola.Modifica = true" />
+					<RadzenIcon Icon="edit" IconStyle="IconStyle.Warning" @onclick="@(x => singola.Modifica = true)" />
 				}
 				else
 				{
-					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" class="w-100" Click="x => singola.Modifica = false" />
+					<RadzenIcon Icon="save" IconStyle="IconStyle.Primary" @onclick="@(x => ModificaAbilità(singola))" />
 				}
 			</RadzenColumn>
 			<RadzenColumn Size="2">
-				<RadzenButton Icon="menu" ButtonStyle="ButtonStyle.Primary" Click="x => VisualizzaDescrizione(singola.Abilità)" class="w-100" />
+				<RadzenIcon Icon="menu" IconStyle="IconStyle.Primary" @onclick="@(x => VisualizzaDescrizione(singola.Abilità))" />
 			</RadzenColumn>
 			<RadzenColumn Size="2">
-				<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="x => EliminaAbilità(singola)" class="w-100" />
+				<RadzenIcon Icon="delete" IconStyle="IconStyle.Danger" @onclick="@(x => EliminaAbilità(singola))" />
 			</RadzenColumn>
 		</RadzenRow>
 	}
@@ -48,7 +48,8 @@
 	[Parameter] public bool Collapsable { get; set; } = true; 
 	[Parameter] public EventCallback<AbilitàPersonaggio> EliminaAbilitàPersonaggio { get; set; }
 	[Parameter] public EventCallback<AbilitàPersonaggio> OnInserisciAbilità { get; set; }
-	
+	[Parameter] public EventCallback<AbilitàPersonaggio> OnModificaAbilità { get; set; }
+
 	List<Abilità> AbilitàTotali = new List<Abilità>();
 
 	protected override async Task OnInitializedAsync()
@@ -88,6 +89,15 @@
 		if (OnInserisciAbilità.HasDelegate)
 		{
 			OnInserisciAbilità.InvokeAsync(abilitàPersonaggio); 
+		}
+	}
+
+	private void ModificaAbilità(AbilitàPersonaggio abilitàPersonaggio)
+	{
+		abilitàPersonaggio.Modifica = false;
+		if (OnModificaAbilità.HasDelegate)
+		{
+			OnModificaAbilità.InvokeAsync(abilitàPersonaggio); 
 		}
 	}
 }

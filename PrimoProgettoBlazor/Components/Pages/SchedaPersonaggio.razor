@@ -66,11 +66,21 @@
 	<RadzenFieldset Text="Abilità e Debolezze" AllowCollapse="false" class="w-100">
 		<RadzenRow>
 			<RadzenColumn Size="12" SizeMD="6">
-				<SchermataAbilità Titolo="Abilità" @bind-Abilità="personaggio.Abilità" IsAbilità="true" EliminaAbilitàPersonaggio="EliminaAbilità" OnInserisciAbilità="InserisciAbilità" />
+				<SchermataAbilità Titolo="Abilità" 
+								  @bind-Abilità="personaggio.Abilità" 
+								  IsAbilità="true" 
+								  EliminaAbilitàPersonaggio="EliminaAbilità" 
+								  OnInserisciAbilità="InserisciAbilità"
+								  OnModificaAbilità="ModificaAbilità" />
 			</RadzenColumn>
 
 			<RadzenColumn Size="12" SizeMD="6">
-				<SchermataAbilità Titolo="Debolezze" @bind-Abilità="personaggio.Abilità" IsAbilità="false" EliminaAbilitàPersonaggio="EliminaAbilità" OnInserisciAbilità="InserisciAbilità" />
+				<SchermataAbilità Titolo="Debolezze" 
+								  @bind-Abilità="personaggio.Abilità" 
+								  IsAbilità="false" 
+								  EliminaAbilitàPersonaggio="EliminaAbilità" 
+								  OnInserisciAbilità="InserisciAbilità"
+								  OnModificaAbilità="ModificaAbilità" />
 			</RadzenColumn>
 		</RadzenRow>
 	</RadzenFieldset>
@@ -88,13 +98,13 @@
 	[Parameter]
 	public EventCallback OnClose { get; set; }
 
-	
+
 	string titolo = "";
 
 	protected override async Task OnInitializedAsync()
 	{
 		titolo = "Nuovo personaggio";
-	
+
 		if (personaggio.Id != 0)
 		{
 			titolo = "Modifica Personaggio";
@@ -168,6 +178,11 @@
 		abilitàPersonaggio.PersonaggioId = personaggio.Id; 
 		abilitàPersonaggio.AbilitàIdAbilità = abilitàPersonaggio.Abilità.Id;
 		personaggio.Abilità.Add(abilitàPersonaggio);
-		
+
+	}
+
+	public async Task ModificaAbilità(AbilitàPersonaggio abilitàPersonaggio)
+	{
+		await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); 
 	}
 }

@@ -94,7 +94,7 @@
 	[Parameter]
 	public Personaggio? personaggio { get; set; } = new Personaggio();
 	[Parameter]
-	public EventCallback OnSalva { get; set; }
+	public EventCallback OnReset { get; set; }
 	[Parameter]
 	public EventCallback OnClose { get; set; }
 
@@ -129,9 +129,9 @@
 			if (result.Value)
 			{
 				await personaggioService.SalvaPersonaggio(personaggio);
-				if (OnSalva.HasDelegate)
+				if (OnReset.HasDelegate)
 				{
-					await OnSalva.InvokeAsync();
+					await OnReset.InvokeAsync();
 				}
 			}
 			else
@@ -155,6 +155,11 @@
 		if (result.HasValue && result.Value)
 		{	
 			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale); 
+			if (!string.IsNullOrEmpty(errore))
+			{
+				notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = "Impossibile eliminare l'abilità", Duration = 3000 });
+				return; 
+			}
 			personaggio.Abilità.Remove(quale);
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Abilità eliminata!", Duration = 3000 });
 			await InvokeAsync(StateHasChanged); 

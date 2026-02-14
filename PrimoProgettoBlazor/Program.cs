@@ -14,7 +14,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddRadzenComponents();
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<BancaDati>(x => x.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+builder.Services.AddDbContext<BancaDati>(x => { x.UseSqlServer(connectionString); x.EnableSensitiveDataLogging(); }, ServiceLifetime.Scoped);
 
 builder.Services.AddScoped<IPersonaggioService,PersonaggioService>(); 
 builder.Services.AddScoped<IAbilitàPersonaggioService,AbilitàPersonaggioService>(); 

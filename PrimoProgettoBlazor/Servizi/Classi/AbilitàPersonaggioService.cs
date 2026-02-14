@@ -70,7 +70,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        //db.Attach(abilitàPersonaggio); Ci sono problemi con l'attach
+                        db.Attach(abilitàPersonaggio); //Ci sono problemi con l'attach
                         if (!db.AbilitàPersonaggi.Any(x => x.PersonaggioId == abilitàPersonaggio.PersonaggioId && x.AbilitàIdAbilità == abilitàPersonaggio.AbilitàIdAbilità))
                         {
                             db.AbilitàPersonaggi.Add(abilitàPersonaggio);

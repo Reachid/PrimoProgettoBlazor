@@ -34,6 +34,14 @@
 			</RadzenColumn>
 		</RadzenRow>
 		<RadzenRow>
+			<RadzenColumn Size="12">
+				<RadzenFieldset Text="Descrizione" class="w-100" AllowCollapse="true">
+					<RadzenTextArea @bind-Value="@attacco.Descrizione" class="w-100" Rows="10" Visible="@(attacco.InModifica)" />
+					<RadzenText Text="@attacco.Descrizione" class="w-100" Visible="@(!attacco.InModifica)" />
+				</RadzenFieldset>
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenRow Visible="@(attacco.IdAttacco != 0)">
 			<RadzenColumn Size="12" SizeMD="12">
 				<RadzenRow>
 					<RadzenColumn Size="6" SizeMD="3">
@@ -59,17 +67,10 @@
 				</RadzenRow>
 			</RadzenColumn>
 		</RadzenRow>
-		<RadzenRow>
-			<RadzenColumn Size="12">
-				<RadzenFieldset Text="Descrizione" class="w-100" AllowCollapse="true">
-					<RadzenTextArea @bind-Value="@attacco.Descrizione" class="w-100" Rows="15" Visible="@(attacco.InModifica)" />
-					<RadzenText Text="@attacco.Descrizione" class="w-100" Visible="@(!attacco.InModifica)" />
-				</RadzenFieldset>
-			</RadzenColumn>
-		</RadzenRow>
-		<RadzenRow>
+		<RadzenRow Visible="@(attacco.IdAttacco != 0)">
 			<RadzenColumn Size="12" SizeMD="6" class="rz-pb-2">
 				<SchermataPerk @bind-Perk="attacco.AttacchiPerks"
+							   InModifica="@attacco.InModifica"
 							   IsAbilità="true"
 							   OnInserisciPerk="x => InserisciAbilità(x, attacco)"
 							   OnEliminaPerk="x => EliminaPerk(x, attacco)"
@@ -79,6 +80,7 @@
 			</RadzenColumn>
 			<RadzenColumn Size="12" SizeMD="6" class="rz-pb-2">
 				<SchermataPerk @bind-Perk="attacco.AttacchiPerks"
+							   InModifica="@attacco.InModifica"
 							   IsAbilità="false"
 							   OnInserisciPerk="x => InserisciAbilità(x, attacco)"
 							   OnEliminaPerk="x => EliminaPerk(x, attacco)"
@@ -111,7 +113,12 @@
 
 	public async Task ModificaPerk(AttaccoPerk ap)
 	{
-		await attaccoPerkService.SalvaAttaccoPerk(ap);
+		string result = await attaccoPerkService.SalvaAttaccoPerk(ap);
+		if (!string.IsNullOrEmpty(result))
+		{
+			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = result, Duration = 3000 });
+			return;
+		}
 		notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk modificata con successo!", Duration = 3000 });
 		await InvokeAsync(StateHasChanged);
 	}
@@ -150,9 +157,9 @@
 	{
 		await dialog.OpenAsync<SchedaDescrizioneAttacco>(quale.Nome,
 			new Dictionary<string, object>()
-											{
+												{
 				{"Descrizione", quale.Descrizione }
-											},
+												},
 			new DialogOptions()
 				{
 					Width = "100vw",
@@ -166,8 +173,17 @@
 		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa perk?", "Eliminazione perk", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
 		if (result.HasValue && result.Value)
 		{
+			attacco.AttacchiPerks.Remove(attaccoPerk);
 			string errore = await attaccoPerkService.EliminaAttaccoPerk(attaccoPerk);
-			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk eliminata!", Duration = 3000 });
+			if (string.IsNullOrEmpty(errore))
+			{
+				notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk eliminata!", Duration = 3000 });
+			}
+			else
+			{
+				notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = errore, Duration = 3000 });
+			}
+
 			await InvokeAsync(StateHasChanged);
 		}
 	}
@@ -178,6 +194,7 @@
 		if (result.HasValue && result.Value)
 		{
 			await PersonaggioService.EliminaAttacco(quale);
+			personaggio.Attacchi.Remove(quale);
 			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Attacco eliminato!", Duration = 3000 });
 			await InvokeAsync(StateHasChanged);
 		}

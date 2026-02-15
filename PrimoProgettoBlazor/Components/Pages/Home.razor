@@ -2,18 +2,30 @@
 @inject NavigationManager navman
 @inject IPersonaggioService personaggioService
 @inject IGiocatoreService giocatoreService
+@inject ISessioneService sessioneService
 @inject DialogService dialog
+@inject NotificationService notify
 
 @if (personaggio == null)
 {
+	<RadzenRow class="mb-2">
+		<RadzenColumn Size="12">
+			<RadzenFormField Text="Sessione" class="w-100">
+				<RadzenDropDown Data="sessioni" @bind-Value="sessioneScelta" AllowFiltering="true" class="w-100" AllowClear="true"/>
+			</RadzenFormField>
+		</RadzenColumn>
+	</RadzenRow>
 	<RadzenRow>
-		@foreach (Personaggio personaggio in giocatore.Personaggi)
+		@foreach (Personaggio personaggio in giocatore.Personaggi.Where(x => (sessioneScelta != null && sessioneScelta.Id != 0 )? x.SessioneId == sessioneScelta.Id : true))
 		{
 			<RadzenColumn Size="6" SizeMD="3">
 				<RadzenCard>
 					<RadzenRow>
 						<RadzenText TagName="TagName.H2" TextStyle="TextStyle.DisplayH5" class="w-100" TextAlign="TextAlign.Center">@personaggio.Nome</RadzenText>
-						<RadzenText TagName="TagName.H3" TextStyle="TextStyle.DisplayH6" class="w-100" TextAlign="TextAlign.Center">@personaggio.Sessione.Nome</RadzenText>
+						@if(sessioneScelta == null || sessioneScelta.Id == 0)
+						{
+							<RadzenText TagName="TagName.H3" TextStyle="TextStyle.DisplayH6" class="w-100" TextAlign="TextAlign.Center">@personaggio.Sessione.Nome</RadzenText>
+						}
 					</RadzenRow>
 					<RadzenRow>
 						<RadzenColumn>
@@ -35,7 +47,7 @@
 }
 else
 {
-	<SchedaPersonaggio personaggio="personaggio" OnReset="ResettaPersonaggio" OnClose="@(() => personaggio = null)" />
+	<SchedaPersonaggio personaggio="personaggio" OnReset="ResettaPersonaggio" OnClose="ResettaPersonaggio" />
 }
 
 
@@ -46,29 +58,47 @@ else
 	public Giocatore giocatore { get; set; } = new Giocatore();
 
 	Personaggio? personaggio = null;
+	List<Sessione> sessioni = new List<Sessione>(); 
+	Sessione sessioneScelta = new Sessione(); 
+
+	protected override async Task OnInitializedAsync()
+	{
+		sessioni = await sessioneService.GetSessioni(); 
+	}
 
 	private async Task ApriScheda(Personaggio quale)
 	{
 		if (quale.Id == 0)
 		{
-			var result = await dialog.OpenAsync<SchedaSessione>("Sessione personaggio", null, new DialogOptions()
-				{
-					Width = "100vw",
-					Height = "100vh",
-					Resizable = false,
-					Draggable = false
-				});
-			if (result != null)
+			if(sessioneScelta.Id == 0)
 			{
-				if (result is Sessione sessione)
+				var result = await dialog.OpenAsync<SchedaSessione>("Sessione personaggio", null, new DialogOptions()
+					{
+						Resizable = false,
+						Draggable = false
+					});
+				if (result != null)
 				{
-					quale.SessioneId = sessione.Id;
-					quale.Sessione = sessione;
-					quale.Giocatore = giocatore;
-					quale.GiocatoreId = giocatore.Id;
-					personaggio = quale;
+					if (result is Sessione sessione)
+					{
+						quale.SessioneId = sessione.Id;
+						quale.Sessione = sessione;
+
+					}
+				}
+				else
+				{
+					return; 
 				}
 			}
+			else
+			{
+				quale.SessioneId = sessioneScelta.Id;
+				quale.Sessione = sessioneScelta;
+			}
+			quale.Giocatore = giocatore;
+			quale.GiocatoreId = giocatore.Id;
+			personaggio = quale;
 		}
 		else
 		{
@@ -80,18 +110,30 @@ else
 	{
 		personaggio = null;
 		giocatore = await giocatoreService.GetGiocatoreById(giocatore.Id);
-		StateHasChanged();
+		await InvokeAsync(StateHasChanged);
 	}
 
 	private async Task Chiudi()
 	{
 		personaggio = null;
-		StateHasChanged();
+		await InvokeAsync(StateHasChanged);
 	}
 
 	private async Task EliminaPersonaggio(Personaggio personaggio)
 	{
-		await personaggioService.EliminaPersonaggio(personaggio);
-		StateHasChanged();
+		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questo personaggio?", "Eliminazione personaggio", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
+		if (result.HasValue && result.Value)
+		{
+			string errore = await personaggioService.EliminaPersonaggio(personaggio);
+			if (string.IsNullOrEmpty(errore))
+			{
+				notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Personaggio eliminato!", Duration = 3000 });
+			}
+			else
+			{
+				notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = errore, Duration = 3000 });
+			}
+			await InvokeAsync(StateHasChanged);
+		}
 	}
 }

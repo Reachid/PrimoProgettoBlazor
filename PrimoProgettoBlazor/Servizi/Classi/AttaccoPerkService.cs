@@ -19,7 +19,8 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Attach(quale);
+                        //db.Attach(quale);
+                        db.Entry(quale).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged; 
                         db.AttacchiPerks.Remove(quale);
                         await db.SaveChangesAsync();
                         return "";
@@ -40,7 +41,9 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Attach(quale);
+                        //db.Attach(quale);
+                        db.Entry(quale.Attacco).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged;
+                        db.Entry(quale.Perk).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged; 
                         if (db.AttacchiPerks.Any(x => x.AttaccoId == quale.AttaccoId && x.PerkId == quale.PerkId))
                         {
                             db.AttacchiPerks.Update(quale);

@@ -67,20 +67,20 @@
 		<RadzenRow>
 			<RadzenColumn Size="12" SizeMD="6">
 				<SchermataAbilità Titolo="Abilità" 
-								  @bind-Abilità="personaggio.Abilità" 
-								  IsAbilità="true" 
-								  EliminaAbilitàPersonaggio="EliminaAbilità" 
-								  OnInserisciAbilità="InserisciAbilità"
-								  OnModificaAbilità="ModificaAbilità" />
+				@bind-Abilità="personaggio.Abilità" 
+				IsAbilità="true" 
+				EliminaAbilitàPersonaggio="EliminaAbilità" 
+				OnInserisciAbilità="InserisciAbilità"
+				OnModificaAbilità="ModificaAbilità" />
 			</RadzenColumn>
 
 			<RadzenColumn Size="12" SizeMD="6">
 				<SchermataAbilità Titolo="Debolezze" 
-								  @bind-Abilità="personaggio.Abilità" 
-								  IsAbilità="false" 
-								  EliminaAbilitàPersonaggio="EliminaAbilità" 
-								  OnInserisciAbilità="InserisciAbilità"
-								  OnModificaAbilità="ModificaAbilità" />
+				@bind-Abilità="personaggio.Abilità" 
+				IsAbilità="false" 
+				EliminaAbilitàPersonaggio="EliminaAbilità" 
+				OnInserisciAbilità="InserisciAbilità"
+				OnModificaAbilità="ModificaAbilità" />
 			</RadzenColumn>
 		</RadzenRow>
 	</RadzenFieldset>
@@ -166,7 +166,7 @@
 		}
 	}
 
-	public void InserisciAbilità(AbilitàPersonaggio abilitàPersonaggio)
+	public async Task InserisciAbilità(AbilitàPersonaggio abilitàPersonaggio)
 	{
 		if (abilitàPersonaggio.Abilità == null || abilitàPersonaggio.Abilità.Id == 0)
 		{
@@ -181,8 +181,9 @@
 		}
 		abilitàPersonaggio.Personaggio = personaggio; 
 		abilitàPersonaggio.PersonaggioId = personaggio.Id; 
-		abilitàPersonaggio.AbilitàIdAbilità = abilitàPersonaggio.Abilità.Id;
+		abilitàPersonaggio.AbilitàId = abilitàPersonaggio.Abilità.Id;
 		personaggio.Abilità.Add(abilitàPersonaggio);
+		await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); 
 
 	}
 

@@ -22,7 +22,8 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Attach(abilitàPersonaggio);
+                        db.Entry(abilitàPersonaggio.Abilità).State = EntityState.Unchanged;
+                        db.Entry(abilitàPersonaggio.Personaggio).State = EntityState.Unchanged; 
                         db.AbilitàPersonaggi.Remove(abilitàPersonaggio);
                         await db.SaveChangesAsync();
                     }
@@ -70,8 +71,9 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Attach(abilitàPersonaggio); //Ci sono problemi con l'attach
-                        if (!db.AbilitàPersonaggi.Any(x => x.PersonaggioId == abilitàPersonaggio.PersonaggioId && x.AbilitàIdAbilità == abilitàPersonaggio.AbilitàIdAbilità))
+                        db.Entry(abilitàPersonaggio.Abilità).State = EntityState.Unchanged;
+                        db.Entry(abilitàPersonaggio.Personaggio).State = EntityState.Unchanged;
+                        if (!db.AbilitàPersonaggi.Any(x => x.PersonaggioId == abilitàPersonaggio.PersonaggioId && x.AbilitàId == abilitàPersonaggio.AbilitàId))
                         {
                             db.AbilitàPersonaggi.Add(abilitàPersonaggio);
                         }

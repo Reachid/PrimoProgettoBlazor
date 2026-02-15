@@ -79,6 +79,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
+                        db.Entry(categoria.Sessione).State = EntityState.Unchanged; 
                         if(categoria.Id == 0)
                         {
                             db.CategorieKeywords.Add(categoria); 

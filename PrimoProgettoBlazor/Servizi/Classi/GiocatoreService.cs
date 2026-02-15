@@ -34,20 +34,42 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             }
         }
 
-        public async Task<Giocatore?> GetGiocatoreByName(string nome)
+      
+        public async Task<Giocatore?> GetGiocatore(object ricerca)
         {
             Giocatore? giocatore = null;
             using (var scope = factory.CreateScope())
             {
                 using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    giocatore = await db.Giocatori.Where(x => x.Nome.ToLower() == nome.ToLower())
-                                                  .Include(x => x.Personaggi)
-                                                  .ThenInclude(x => x.Sessione)
-                                                  .FirstOrDefaultAsync();
+                    var query = db.Giocatori.AsQueryable(); 
+                    if(ricerca is string nome)
+                    {
+                        query = query.Where(x => x.Nome.ToLower() == nome.ToLower()); 
+                    }
+                    else if(ricerca is int id)
+                    {
+                        query = query.Where(x => x.Id == id); 
+                    }
+
+                    Giocatore? provvisorio = query.FirstOrDefault(); 
+
+                    if (provvisorio != null)
+                    {
+                        if (!provvisorio.IsAdmin)
+                        {
+                            query = query.Include(x => x.Personaggi.Where(y => !y.VisibileSoloAlMaster)).ThenInclude(x => x.Sessione); 
+                        }
+                        else
+                        {
+                            query = query.Include(x => x.Personaggi).ThenInclude(x => x.Sessione);
+                        }
+                    }
+                    giocatore = await query.FirstOrDefaultAsync(); 
+
                     if (giocatore != null && giocatore.IsAdmin)
                     {
-                        foreach (Personaggio p in db.Personaggi.Include(x => x.Sessione).Where(x => x.GiocatoreId != giocatore.Id))
+                        foreach (Personaggio p in db.Personaggi.Include(x => x.Giocatore).Include(x => x.Sessione).Where(x => x.GiocatoreId != giocatore.Id))
                         {
                             giocatore.Personaggi.Add(p);
                         }
@@ -56,25 +78,14 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             }
             return giocatore;
         }
+        public async Task<Giocatore?> GetGiocatoreByName(string nome)
+        {
+            return await GetGiocatore(nome);
+        }
 
         public async Task<Giocatore?> GetGiocatoreById(int idGiocatore)
         {
-            Giocatore? giocatore = null;
-            using (var scope = factory.CreateScope())
-            {
-                using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
-                {
-                    giocatore = await db.Giocatori.Where(x => x.Id == idGiocatore).Include(x => x.Personaggi).ThenInclude(x => x.Sessione).FirstOrDefaultAsync();
-                    if (giocatore != null && giocatore.IsAdmin)
-                    {
-                        foreach(Personaggio p in db.Personaggi.Include(x => x.Sessione).Where(x => x.GiocatoreId != giocatore.Id))
-                        {
-                            giocatore.Personaggi.Add(p);
-                        }
-                    }
-                }
-            }
-            return giocatore;
+            return await GetGiocatore(idGiocatore);
         }
 
         public async Task<List<Giocatore>> GetGiocatori()

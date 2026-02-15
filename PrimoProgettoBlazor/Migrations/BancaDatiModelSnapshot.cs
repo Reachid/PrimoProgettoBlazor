@@ -47,21 +47,16 @@ namespace PrimoProgettoBlazor.Migrations
 
             modelBuilder.Entity("PrimoProgettoBlazor.Components.Classi.Entities.AbilitàPersonaggio", b =>
                 {
-                    b.Property<int>("AbilitàIdAbilità")
+                    b.Property<int>("AbilitàId")
                         .HasColumnType("int");
 
                     b.Property<int>("PersonaggioId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AbilitàId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Punteggio")
                         .HasColumnType("int");
 
-                    b.HasKey("AbilitàIdAbilità", "PersonaggioId");
-
-                    b.HasIndex("AbilitàId");
+                    b.HasKey("AbilitàId", "PersonaggioId");
 
                     b.HasIndex("PersonaggioId");
 
@@ -142,10 +137,15 @@ namespace PrimoProgettoBlazor.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("SessioneId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("VisibileDaAdmin")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SessioneId");
 
                     b.ToTable("CategorieKeywords");
                 });
@@ -272,6 +272,9 @@ namespace PrimoProgettoBlazor.Migrations
                     b.Property<int>("Vigore")
                         .HasColumnType("int");
 
+                    b.Property<bool>("VisibileSoloAlMaster")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GiocatoreId");
@@ -347,6 +350,17 @@ namespace PrimoProgettoBlazor.Migrations
                     b.Navigation("Perk");
                 });
 
+            modelBuilder.Entity("PrimoProgettoBlazor.Components.Classi.Entities.CategoriaKeyword", b =>
+                {
+                    b.HasOne("PrimoProgettoBlazor.Components.Classi.Entities.Sessione", "Sessione")
+                        .WithMany("CategorieKeyword")
+                        .HasForeignKey("SessioneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sessione");
+                });
+
             modelBuilder.Entity("PrimoProgettoBlazor.Components.Classi.Entities.Keyword", b =>
                 {
                     b.HasOne("PrimoProgettoBlazor.Components.Classi.Entities.CategoriaKeyword", "CategoriaKeyword")
@@ -411,6 +425,8 @@ namespace PrimoProgettoBlazor.Migrations
 
             modelBuilder.Entity("PrimoProgettoBlazor.Components.Classi.Entities.Sessione", b =>
                 {
+                    b.Navigation("CategorieKeyword");
+
                     b.Navigation("Personaggi");
                 });
 #pragma warning restore 612, 618

@@ -42,7 +42,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             {
                 using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    Personaggi = await db.Personaggi.Include(x => x.Sessione).ToListAsync();
+                    Personaggi = await db.Personaggi.Include(x => x.Sessione).Include(x => x.Giocatore).AsNoTracking().ToListAsync();
                 }
             }
             return Personaggi;
@@ -70,6 +70,20 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             return Personaggio;
         }
 
+        public void SetUnchanged(Personaggio personaggio, BancaDati db)
+        {
+            db.Entry(personaggio.Giocatore).State = EntityState.Unchanged;
+            db.Entry(personaggio.Sessione).State = EntityState.Unchanged; 
+            foreach(Attacco a in personaggio.Attacchi)
+            {
+                db.Entry(a).State = EntityState.Unchanged; 
+            }
+            foreach(AbilitàPersonaggio a in personaggio.Abilità)
+            {
+                db.Entry(a).State = EntityState.Unchanged; 
+            }
+        }
+
         public async Task<string> SalvaPersonaggio(Personaggio personaggio)
         {
             string errore = "";
@@ -79,7 +93,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Attach(personaggio);
+                        SetUnchanged(personaggio, db); 
                         if (personaggio.Id == 0)
                         {
                             db.Personaggi.Add(personaggio);
@@ -108,7 +122,10 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Attach(attacco);
+                        foreach (AttaccoPerk ap in attacco.AttacchiPerks)
+                        {
+                            db.Entry(ap).State = EntityState.Unchanged; 
+                        }
                         db.Attacchi.Update(attacco);
                         await db.SaveChangesAsync();
                     }
@@ -130,7 +147,10 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Attach(attacco);
+                        foreach (AttaccoPerk ap in attacco.AttacchiPerks)
+                        {
+                            db.Entry(ap).State = EntityState.Unchanged;
+                        }
                         db.Attacchi.Remove(attacco);
                         await db.SaveChangesAsync();
                     }

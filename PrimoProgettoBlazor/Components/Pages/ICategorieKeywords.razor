@@ -1,12 +1,18 @@
 ﻿@page "/CategorieKeywords"
 @inject ICategoriaKeywordService categoriaKeywordService
+@inject ISessioneService sessioneService
 @inject DialogService dialog
 @inject NotificationService notify
 
+<RadzenRow class="mb-2">
+	<RadzenFormField Text="Sessioni" class="w-100">
+		<RadzenDropDown Data="@sessioni" @bind-Value="@sessione" AllowClear="true" AllowFiltering="true" class="w-100" />
+	</RadzenFormField>
+</RadzenRow>
 @if (categoria == null)
 {
 	<RadzenRow>
-		@foreach (CategoriaKeyword singola in CategorieKeywords)
+		@foreach (CategoriaKeyword singola in CategorieKeywords.Where(x => sessione != null ? x.SessioneId == sessione.Id : true))
 		{
 			<RadzenColumn SizeMD="6" Size="12">
 				<RadzenCard>
@@ -33,6 +39,11 @@ else
 {
 	<EditForm Model="categoria" OnSubmit="Salva">
 		<RadzenRow>
+			<RadzenColumn Size="12" Visible="@(sessione == null)">
+				<RadzenFormField Text="Sessione">
+					<RadzenDropDown Data="sessioni" @bind-Value="@categoria.Sessione"/>
+				</RadzenFormField>
+			</RadzenColumn>
 			<RadzenColumn Size="12" SizeMD="6">
 				<RadzenFormField Text="Nome" class="w-100">
 					<RadzenTextBox @bind-Value="@categoria.Nome" class="w-100" />
@@ -57,6 +68,9 @@ else
 
 	List<CategoriaKeyword> CategorieKeywords = new List<CategoriaKeyword>();
 	CategoriaKeyword? categoria = null;
+
+	List<Sessione> sessioni = new List<Sessione>(); 
+	Sessione? sessione = null; 
 	protected override async Task OnInitializedAsync()
 	{
 		await Carica();
@@ -65,6 +79,7 @@ else
 	private async Task Carica()
 	{
 		CategorieKeywords = await categoriaKeywordService.GetCategorieKeyword(giocatore);
+		sessioni = await sessioneService.GetSessioni(); 
 	}
 
 	private void Modifica(CategoriaKeyword quale)
@@ -74,6 +89,15 @@ else
 
 	private async Task Salva()
 	{
+		if(sessione != null)
+		{
+			categoria.Sessione = sessione; 
+			categoria.SessioneId = sessione.Id; 
+		}
+		else
+		{
+			categoria.SessioneId = categoria.Sessione.Id; 
+		}
 		string errore = await categoriaKeywordService.SalvaCategoriaKeyword(categoria);
 		MostraErrore(errore, "Inserimento riuscito");
 		categoria = null;

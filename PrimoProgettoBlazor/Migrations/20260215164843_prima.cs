@@ -5,7 +5,7 @@
 namespace PrimoProgettoBlazor.Migrations
 {
     /// <inheritdoc />
-    public partial class Prima : Migration
+    public partial class prima : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -40,6 +40,22 @@ namespace PrimoProgettoBlazor.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Perks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Punteggio = table.Column<int>(type: "int", nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descrizione = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsAbilità = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Perks", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sessioni",
                 columns: table => new
                 {
@@ -50,6 +66,28 @@ namespace PrimoProgettoBlazor.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sessioni", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CategorieKeywords",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descrizione = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VisibileDaAdmin = table.Column<bool>(type: "bit", nullable: false),
+                    SessioneId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategorieKeywords", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CategorieKeywords_Sessioni_SessioneId",
+                        column: x => x.SessioneId,
+                        principalTable: "Sessioni",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,7 +106,8 @@ namespace PrimoProgettoBlazor.Migrations
                     Armatura = table.Column<int>(type: "int", nullable: false),
                     LivelloMinaccia = table.Column<int>(type: "int", nullable: false),
                     GiocatoreId = table.Column<int>(type: "int", nullable: false),
-                    SessioneId = table.Column<int>(type: "int", nullable: false)
+                    SessioneId = table.Column<int>(type: "int", nullable: false),
+                    VisibileSoloAlMaster = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -88,17 +127,38 @@ namespace PrimoProgettoBlazor.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Keywords",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Titolo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descrizione = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoriaKeywordId = table.Column<int>(type: "int", nullable: false),
+                    VisibileSoloDaAdmin = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Keywords", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Keywords_CategorieKeywords_CategoriaKeywordId",
+                        column: x => x.CategoriaKeywordId,
+                        principalTable: "CategorieKeywords",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AbilitàPersonaggi",
                 columns: table => new
                 {
-                    AbilitàIdAbilità = table.Column<int>(type: "int", nullable: false),
-                    PersonaggioId = table.Column<int>(type: "int", nullable: false),
                     AbilitàId = table.Column<int>(type: "int", nullable: false),
+                    PersonaggioId = table.Column<int>(type: "int", nullable: false),
                     Punteggio = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AbilitàPersonaggi", x => new { x.AbilitàIdAbilità, x.PersonaggioId });
+                    table.PrimaryKey("PK_AbilitàPersonaggi", x => new { x.AbilitàId, x.PersonaggioId });
                     table.ForeignKey(
                         name: "FK_AbilitàPersonaggi_Abilità_AbilitàId",
                         column: x => x.AbilitàId,
@@ -123,6 +183,8 @@ namespace PrimoProgettoBlazor.Migrations
                     Roll = table.Column<int>(type: "int", nullable: false),
                     Moltiplicatore = table.Column<int>(type: "int", nullable: false),
                     Vigore = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Affinità = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descrizione = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PersonaggioId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -136,10 +198,30 @@ namespace PrimoProgettoBlazor.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_AbilitàPersonaggi_AbilitàId",
-                table: "AbilitàPersonaggi",
-                column: "AbilitàId");
+            migrationBuilder.CreateTable(
+                name: "AttacchiPerks",
+                columns: table => new
+                {
+                    AttaccoId = table.Column<int>(type: "int", nullable: false),
+                    PerkId = table.Column<int>(type: "int", nullable: false),
+                    Punteggio = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AttacchiPerks", x => new { x.AttaccoId, x.PerkId });
+                    table.ForeignKey(
+                        name: "FK_AttacchiPerks_Attacchi_AttaccoId",
+                        column: x => x.AttaccoId,
+                        principalTable: "Attacchi",
+                        principalColumn: "IdAttacco",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AttacchiPerks_Perks_PerkId",
+                        column: x => x.PerkId,
+                        principalTable: "Perks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AbilitàPersonaggi_PersonaggioId",
@@ -150,6 +232,21 @@ namespace PrimoProgettoBlazor.Migrations
                 name: "IX_Attacchi_PersonaggioId",
                 table: "Attacchi",
                 column: "PersonaggioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AttacchiPerks_PerkId",
+                table: "AttacchiPerks",
+                column: "PerkId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategorieKeywords_SessioneId",
+                table: "CategorieKeywords",
+                column: "SessioneId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Keywords_CategoriaKeywordId",
+                table: "Keywords",
+                column: "CategoriaKeywordId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Personaggi_GiocatoreId",
@@ -169,10 +266,22 @@ namespace PrimoProgettoBlazor.Migrations
                 name: "AbilitàPersonaggi");
 
             migrationBuilder.DropTable(
-                name: "Attacchi");
+                name: "AttacchiPerks");
+
+            migrationBuilder.DropTable(
+                name: "Keywords");
 
             migrationBuilder.DropTable(
                 name: "Abilità");
+
+            migrationBuilder.DropTable(
+                name: "Attacchi");
+
+            migrationBuilder.DropTable(
+                name: "Perks");
+
+            migrationBuilder.DropTable(
+                name: "CategorieKeywords");
 
             migrationBuilder.DropTable(
                 name: "Personaggi");

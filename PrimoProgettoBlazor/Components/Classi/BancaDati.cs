@@ -22,18 +22,18 @@ namespace PrimoProgettoBlazor.Components.Classi
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Personaggio>().HasOne(x => x.Giocatore).WithMany(x => x.Personaggi).HasForeignKey(x => x.GiocatoreId);
-            modelBuilder.Entity<Personaggio>().HasOne(x => x.Sessione).WithMany(x => x.Personaggi).HasForeignKey(x => x.SessioneId);
-            modelBuilder.Entity<Personaggio>().HasMany(x => x.Abilità).WithOne(x => x.Personaggio).HasForeignKey(x => x.PersonaggioId);
-            modelBuilder.Entity<Personaggio>().HasMany(x => x.Attacchi).WithOne(x => x.Personaggio).HasForeignKey(x => x.PersonaggioId);
+            //modelBuilder.Entity<Personaggio>().HasOne(x => x.Giocatore).WithMany(x => x.Personaggi).HasForeignKey(x => x.GiocatoreId);
+            //modelBuilder.Entity<Personaggio>().HasOne(x => x.Sessione).WithMany(x => x.Personaggi).HasForeignKey(x => x.SessioneId);
+            //modelBuilder.Entity<Personaggio>().HasMany(x => x.Abilità).WithOne(x => x.Personaggio).HasForeignKey(x => x.PersonaggioId);
+            //modelBuilder.Entity<Personaggio>().HasMany(x => x.Attacchi).WithOne(x => x.Personaggio).HasForeignKey(x => x.PersonaggioId);
 
-            modelBuilder.Entity<Abilità>().HasMany(x => x.Personaggi).WithOne(x => x.Abilità).HasForeignKey(x => x.AbilitàIdAbilità);
+            //modelBuilder.Entity<Abilità>().HasMany(x => x.Personaggi).WithOne(x => x.Abilità).HasForeignKey(x => x.AbilitàId);
 
-            modelBuilder.Entity<Attacco>().HasMany(x => x.AttacchiPerks).WithOne(x => x.Attacco).HasForeignKey(x => x.AttaccoId);
+            //modelBuilder.Entity<Attacco>().HasMany(x => x.AttacchiPerks).WithOne(x => x.Attacco).HasForeignKey(x => x.AttaccoId);
 
-            modelBuilder.Entity<Perk>().HasMany(x => x.AttacchiPerks).WithOne(x => x.Perk).HasForeignKey(x => x.PerkId);
+            //modelBuilder.Entity<Perk>().HasMany(x => x.AttacchiPerks).WithOne(x => x.Perk).HasForeignKey(x => x.PerkId);
 
-            modelBuilder.Entity<Keyword>().HasOne(x => x.CategoriaKeyword).WithMany(x => x.Keywords).HasForeignKey(x => x.CategoriaKeywordId); 
+            //modelBuilder.Entity<Keyword>().HasOne(x => x.CategoriaKeyword).WithMany(x => x.Keywords).HasForeignKey(x => x.CategoriaKeywordId); 
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -1,7 +1,7 @@
 ﻿@inject DialogService dialog
 @inject IPerkService perkService
 <RadzenPanel Text="@Titolo" AllowCollapse="@Collapsable" class="w-100 rz-pb-2">
-	<RadzenRow class="rz-pb-2">
+	<RadzenRow class="rz-pb-2" Visible="@InModifica">
 		<PerkSelector PerkTotali="@PerkTotali" Positivo="@IsAbilità" OnInserisciAbilità="InserisciAbilità" />
 	</RadzenRow>
 	@foreach (AttaccoPerk singola in Perk.Where(x => x.Perk.IsAbilità == IsAbilità))
@@ -51,6 +51,7 @@
 	[Parameter] public EventCallback<ICollection<AttaccoPerk>> PerkChanged { get; set; }
 	[Parameter] public bool IsAbilità { get; set; } = true; 
 	[Parameter] public bool Collapsable { get; set; } = true; 
+	[Parameter] public bool InModifica { get; set; } = false; 
 	[Parameter] public EventCallback<AttaccoPerk> OnEliminaPerk { get; set; }
 	[Parameter] public EventCallback<AttaccoPerk> OnInserisciPerk { get; set; }
 	[Parameter] public EventCallback<AttaccoPerk> OnModificaPerk { get; set; }

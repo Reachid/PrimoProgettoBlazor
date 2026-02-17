@@ -3,6 +3,7 @@
 @inject IPersonaggioService personaggioService
 @inject IGiocatoreService giocatoreService
 @inject ISessioneService sessioneService
+@inject ICategoriaKeywordService categoriaKeywordService
 @inject DialogService dialog
 @inject NotificationService notify
 
@@ -43,6 +44,23 @@
 			</RadzenColumn>
 		}
 	</RadzenRow>
+	<RadzenRow>
+		@if(sessioneScelta.Id != 0)
+		{
+			<RadzenColumn Size="12">
+				@if (scelta.Id == 0)
+				{
+					<RadzenText TagName="TagName.H1" TextStyle="TextStyle.DisplayH1" class="w-100" TextAlign="TextAlign.Center" Text="Categorie Keywords" />
+					<ListaCategorieKeyword CategorieKeywords="CategoriaKeywords.Where(x => sessioneScelta != null ? x.SessioneId == sessioneScelta.Id : true)" OnPremiModifica="ScegliCategoria" />
+				}
+				else
+				{
+					<ListaKeywords scelta="scelta" />
+				}
+			</RadzenColumn>
+		}
+	</RadzenRow>
+
 	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="x => ApriScheda(new Personaggio())" Icon="add" />
 }
 else
@@ -61,9 +79,18 @@ else
 	List<Sessione> sessioni = new List<Sessione>(); 
 	Sessione sessioneScelta = new Sessione(); 
 
+	List<CategoriaKeyword> CategoriaKeywords = new List<CategoriaKeyword>(); 
+	CategoriaKeyword scelta = new CategoriaKeyword(); 
+
 	protected override async Task OnInitializedAsync()
 	{
 		sessioni = await sessioneService.GetSessioni(); 
+		CategoriaKeywords = await categoriaKeywordService.GetCategorieKeyword(giocatore, true); 
+	}
+
+	private void ScegliCategoria(CategoriaKeyword categoriaKeyword)
+	{
+		scelta = categoriaKeyword; 
 	}
 
 	private async Task ApriScheda(Personaggio quale)

@@ -14,28 +14,7 @@
 	
 	if(scelta.Id != 0)
 	{
-		<RadzenRow>
-			@foreach (Keyword singola in scelta.Keywords)
-			{
-				<RadzenColumn SizeMD="6" Size="12">
-					<RadzenCard>
-						<RadzenRow>
-							<RadzenColumn Size="12">
-								<RadzenText TextAlign="TextAlign.Center" Text="@singola.Titolo" />
-							</RadzenColumn>
-						</RadzenRow>
-						<RadzenRow>
-							<RadzenColumn Size="6">
-								<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Click="x => Elimina(singola)" class="w-100" />
-							</RadzenColumn>
-							<RadzenColumn Size="6">
-								<RadzenButton ButtonStyle="ButtonStyle.Warning" Icon="edit" Click="x => Modifica(singola)" class="w-100" />
-							</RadzenColumn>
-						</RadzenRow>
-					</RadzenCard>
-				</RadzenColumn>
-			}
-		</RadzenRow>
+		<ListaKeywords scelta="scelta" OnPremiDelete="Elimina" OnPremiModifica="Modifica" />
 	}
 	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="add" Click="x => Modifica(new Keyword())" />
 }

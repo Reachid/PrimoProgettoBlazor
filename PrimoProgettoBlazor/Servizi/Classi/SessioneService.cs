@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PrimoProgettoBlazor.Components.Classi;
 using PrimoProgettoBlazor.Components.Classi.Entities;
 using PrimoProgettoBlazor.Servizi.Interfacce;
@@ -8,7 +7,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
 {
     public class SessioneService : ISessioneService
     {
-        IServiceScopeFactory factory; 
+        IServiceScopeFactory factory;
         public SessioneService(IServiceScopeFactory factory)
         {
             this.factory = factory;
@@ -22,7 +21,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Sessioni.Remove(sessione); 
+                        db.Sessioni.Remove(sessione);
                         await db.SaveChangesAsync();
                         return "";
                     }
@@ -36,15 +35,15 @@ namespace PrimoProgettoBlazor.Servizi.Classi
 
         public async Task<List<Sessione>> GetSessioni()
         {
-            List<Sessione> sessioni = new List<Sessione>(); 
+            List<Sessione> sessioni = new List<Sessione>();
             using (var scope = factory.CreateScope())
             {
-                using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>()) 
+                using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    sessioni = await db.Sessioni.ToListAsync(); 
+                    sessioni = await db.Sessioni.ToListAsync();
                 }
             }
-            return sessioni; 
+            return sessioni;
         }
 
         public async Task<string> SalvaSessione(Sessione sessione)
@@ -64,13 +63,13 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                             db.Sessioni.Update(sessione);
                         }
                         await db.SaveChangesAsync();
-                        return ""; 
+                        return "";
                     }
                 }
             }
             catch (Exception ex)
             {
-                return ex.Message; 
+                return ex.Message;
             }
         }
     }

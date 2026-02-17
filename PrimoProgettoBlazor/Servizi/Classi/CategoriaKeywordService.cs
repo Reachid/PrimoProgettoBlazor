@@ -22,6 +22,7 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
+                        db.Entry(categoria.Sessione).State = EntityState.Unchanged;
                         db.CategorieKeywords.Remove(categoria);
                         await db.SaveChangesAsync();
                     }
@@ -42,16 +43,18 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             {
                 using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                 {
-                    IQueryable<CategoriaKeyword> temp; 
+                    IQueryable<CategoriaKeyword> temp;
 
                     if (giocatore.IsAdmin)
                     {
-                        temp = db.CategorieKeywords; 
+                        temp = db.CategorieKeywords;
                     }
                     else
                     {
                         temp = db.CategorieKeywords.Where(x => !x.VisibileDaAdmin);
                     }
+
+                    temp = temp.Include(x => x.Sessione);
 
                     if (prendiKeywords)
                     {
@@ -79,16 +82,16 @@ namespace PrimoProgettoBlazor.Servizi.Classi
                 {
                     using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
                     {
-                        db.Entry(categoria.Sessione).State = EntityState.Unchanged; 
-                        if(categoria.Id == 0)
+                        db.Entry(categoria.Sessione).State = EntityState.Unchanged;
+                        if (categoria.Id == 0)
                         {
-                            db.CategorieKeywords.Add(categoria); 
+                            db.CategorieKeywords.Add(categoria);
                         }
                         else
                         {
                             db.CategorieKeywords.Update(categoria);
                         }
-                        await db.SaveChangesAsync(); 
+                        await db.SaveChangesAsync();
                     }
                 }
                 return errore;

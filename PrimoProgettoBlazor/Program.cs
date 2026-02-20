@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.EntityFrameworkCore;
 using PrimoProgettoBlazor.Components;
 using PrimoProgettoBlazor.Components.Classi;
@@ -16,15 +15,16 @@ builder.Services.AddRadzenComponents();
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<BancaDati>(x => { x.UseSqlServer(connectionString); x.EnableSensitiveDataLogging(); }, ServiceLifetime.Scoped);
 
-builder.Services.AddScoped<IPersonaggioService,PersonaggioService>(); 
-builder.Services.AddScoped<IAbilitàPersonaggioService,AbilitàPersonaggioService>(); 
-builder.Services.AddScoped<IAbilitàService,AbilitàService>(); 
-builder.Services.AddScoped<ISessioneService,SessioneService>(); 
-builder.Services.AddScoped<IGiocatoreService,GiocatoreService>();
-builder.Services.AddScoped<IPerkService,PerkService>();
-builder.Services.AddScoped<ICategoriaKeywordService,CategoriaKeywordService>();
-builder.Services.AddScoped<IKeywordService,KeywordService>();
-builder.Services.AddScoped<IAttaccoPerkService,AttaccoPerkService>();
+builder.Services.AddScoped<IPersonaggioService, PersonaggioService>();
+builder.Services.AddScoped<IAbilitàPersonaggioService, AbilitàPersonaggioService>();
+builder.Services.AddScoped<IAbilitàService, AbilitàService>();
+builder.Services.AddScoped<ISessioneService, SessioneService>();
+builder.Services.AddScoped<IGiocatoreService, GiocatoreService>();
+builder.Services.AddScoped<IPerkService, PerkService>();
+builder.Services.AddScoped<ICategoriaKeywordService, CategoriaKeywordService>();
+builder.Services.AddScoped<IKeywordService, KeywordService>();
+builder.Services.AddScoped<IAttaccoPerkService, AttaccoPerkService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

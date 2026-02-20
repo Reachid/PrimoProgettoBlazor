@@ -3,8 +3,8 @@
 	<RadzenMenuItem Text="Schede" Path="/"/>
 	<RadzenMenuItem Text="Abilità" Path="/Abilita" />
 	<RadzenMenuItem Text="Perks" Path="/Perk" />
-	<RadzenMenuItem Text="Keywords" Path="/Keywords" />
 
+	<RadzenMenuItem Text="Keywords" Path="/Keywords" Visible="@giocatore.IsAdmin" />
 	<RadzenMenuItem Text="Sessioni" Path="/Sessioni" Visible="@giocatore.IsAdmin" />
 	<RadzenMenuItem Text="Giocatori" Path="/Giocatori" Visible="@giocatore.IsAdmin" />
 	<RadzenMenuItem Text="Categorie" Path="/CategorieKeywords" Visible="@giocatore.IsAdmin" />

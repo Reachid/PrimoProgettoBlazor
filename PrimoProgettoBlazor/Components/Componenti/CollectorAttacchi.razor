@@ -2,6 +2,7 @@
 @inject IPerkService perkService
 @inject IAttaccoPerkService attaccoPerkService
 @inject IPersonaggioService PersonaggioService
+@inject IMessageService messageService
 @inject NotificationService notify
 
 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.End" class="rz-mb-2">
@@ -114,42 +115,36 @@
 	public async Task ModificaPerk(AttaccoPerk ap)
 	{
 		string result = await attaccoPerkService.SalvaAttaccoPerk(ap);
-		if (!string.IsNullOrEmpty(result))
-		{
-			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = result, Duration = 3000 });
-			return;
-		}
-		notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk modificata con successo!", Duration = 3000 });
+		messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(result), "Perk modificata con successo!", result); 
 		await InvokeAsync(StateHasChanged);
 	}
 
 	public async Task ModificaAttacco(Attacco a)
 	{
 		a.InModifica = false;
-		await PersonaggioService.ModificaAttacco(a);
-		notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Attacco modificato con successo!", Duration = 3000 });
+		string result = await PersonaggioService.ModificaAttacco(a);
+		messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(result), "Attacco modificato con successo!", result);
 		await InvokeAsync(StateHasChanged);
 	}
 
 	private async Task InserisciAbilità(AttaccoPerk attaccoPerk, Attacco attacco)
 	{
-
-		if (attaccoPerk.Perk == null || attaccoPerk.Perk.Id == 0)
+		bool condizione = attaccoPerk.Perk == null || attaccoPerk.Perk.Id == 0; 
+		if (!messageService.MostraMessaggioEsito(condizione, "", "Non hai ancora inserito una perk!", false))
 		{
-			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Warning, Summary = "Non hai ancora inserito una perk!" });
 			return;
 		}
-
-		if (attacco.AttacchiPerks.Any(x => x.Perk.Id == attaccoPerk.Perk.Id))
+		condizione = attacco.AttacchiPerks.Any(x => x.Perk.Id == attaccoPerk.Perk.Id); 
+		if (!messageService.MostraMessaggioEsito(condizione, "", "Questa perk esiste già!", false))
 		{
-			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Warning, Summary = "Questa perk esiste già!" });
 			return;
 		}
 
 		attaccoPerk.Attacco = attacco;
 		attaccoPerk.AttaccoId = attacco.IdAttacco;
+
 		string errore = await attaccoPerkService.SalvaAttaccoPerk(attaccoPerk);
-		notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk aggiunta con successo!", Duration = 3000 });
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Perk aggiunta con successo!", errore); 
 		await InvokeAsync(StateHasChanged);
 	}
 
@@ -170,32 +165,24 @@
 
 	private async Task EliminaPerk(AttaccoPerk attaccoPerk, Attacco attacco)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa perk?", "Eliminazione perk", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if (result.HasValue && result.Value)
+		bool result =  await messageService.ChiediConferma("Eliminazione perk", "Sei sicuro di voler eliminare questa perk?"); 
+		if (result)
 		{
 			attacco.AttacchiPerks.Remove(attaccoPerk);
 			string errore = await attaccoPerkService.EliminaAttaccoPerk(attaccoPerk);
-			if (string.IsNullOrEmpty(errore))
-			{
-				notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Perk eliminata!", Duration = 3000 });
-			}
-			else
-			{
-				notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = errore, Duration = 3000 });
-			}
-
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Perk eliminata con successo!", errore); 
 			await InvokeAsync(StateHasChanged);
 		}
 	}
 
 	private async Task EliminaAttacco(Attacco quale)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questo attacco?", "Eliminazione attacco", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if (result.HasValue && result.Value)
+		bool result = await messageService.ChiediConferma("Eliminazione attacco", "Sei sicuro di voler eliminare questo attacco?");
+		if (result)
 		{
-			await PersonaggioService.EliminaAttacco(quale);
+			string errore = await PersonaggioService.EliminaAttacco(quale);
 			personaggio.Attacchi.Remove(quale);
-			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Attacco eliminato!", Duration = 3000 });
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Attacco eliminato!", errore); 
 			await InvokeAsync(StateHasChanged);
 		}
 	}

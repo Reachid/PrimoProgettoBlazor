@@ -4,6 +4,7 @@
 @inject IGiocatoreService giocatoreService
 @inject ISessioneService sessioneService
 @inject ICategoriaKeywordService categoriaKeywordService
+@inject IMessageService messageService
 @inject DialogService dialog
 @inject NotificationService notify
 
@@ -116,7 +117,6 @@ else
                     {
                         quale.SessioneId = sessione.Id;
                         quale.Sessione = sessione;
-
                     }
                 }
                 else
@@ -154,18 +154,12 @@ else
 
     private async Task EliminaPersonaggio(Personaggio personaggio)
     {
-        bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questo personaggio?", "Eliminazione personaggio", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-        if (result.HasValue && result.Value)
+        
+        bool result = await messageService.ChiediConferma("Eliminazione personaggio", "Sei sicuro di voler eliminare questo personaggio?");
+        if (result)
         {
             string errore = await personaggioService.EliminaPersonaggio(personaggio);
-            if (string.IsNullOrEmpty(errore))
-            {
-                notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Personaggio eliminato!", Duration = 3000 });
-            }
-            else
-            {
-                notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = errore, Duration = 3000 });
-            }
+            messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Personaggio eliminato!", errore); 
             await InvokeAsync(StateHasChanged);
         }
     }

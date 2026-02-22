@@ -2,6 +2,7 @@
 @inject IPerkService perkService
 @inject DialogService dialog
 @inject NotificationService notify
+@inject IMessageService messageService
 
 @if (inModifica == null)
 {
@@ -88,31 +89,20 @@ else
 	private async Task Salva()
 	{
 		string errore = await perkService.SalvaPerk(inModifica);
-		MostraErrore(errore, "Inserimento riuscito");
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento riuscito", errore); 
 		inModifica = null;
 		await Carica();
 	}
 
 	private async Task Elimina(Perk quale)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa perk?", "Eliminazione perk", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if (result.HasValue && result.Value)
+	
+		bool result = await messageService.ChiediConferma("Eliminazione perk", "Sei sicuro di voler eliminare questa perk?");
+		if (result)
 		{
 			string errore = await perkService.EliminaPerk(quale);
-			MostraErrore(errore, "Elinimazione riuscita!");
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Elinimazione riuscita!", errore);
 			await Carica();
-		}
-	}
-
-	private void MostraErrore(string errore, string messaggioDiRiuscita)
-	{
-		if (string.IsNullOrEmpty(errore))
-		{
-			notify.Notify(NotificationSeverity.Success, messaggioDiRiuscita);
-		}
-		else
-		{
-			notify.Notify(NotificationSeverity.Error, errore);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿@inject NotificationService notify
+@inject IMessageService messageService
 <RadzenColumn Size="12" SizeMD="8">
 	<RadzenFormField Text="Nome Abilità" Variant="Variant.Outlined" class="w-100">
 		<RadzenDropDown Data="@PerkFiltrate"
@@ -38,9 +39,9 @@
 	{
 		if (OnInserisciAbilità.HasDelegate)
 		{
-			if (PerkAttacco.Perk.Id == 0)
+			bool condizione = PerkAttacco.Perk.Id == 0; 
+			if (messageService.MostraMessaggioEsito(condizione, "", "Errore durante l'inserimento della Perk", false))
 			{
-				notify.Notify(NotificationSeverity.Error, "Nessuna Perk Inserita", "Errore durante l'inserimento della Perk", 3000);
 				return;
 			}
 			PerkAttacco.PerkId = PerkAttacco.Perk.Id;

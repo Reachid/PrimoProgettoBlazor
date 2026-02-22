@@ -19,16 +19,19 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             return result.HasValue && result.Value;
         }
 
-        public void MostraMessaggioEsito(bool condizione, string messaggioPositivo, string messaggioNegativo)
+        public bool MostraMessaggioEsito(bool condizione, string messaggioPositivo, string messaggioNegativo, bool mostraPositivo = true)
         {
-            if (condizione)
+            if (condizione && mostraPositivo)
             {
                 notification.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = messaggioPositivo, Duration = 3000 });
+                return true; 
             }
-            else
+            else if(!condizione)
             {
                 notification.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = messaggioNegativo, Duration = 5000 });
+                return false; 
             }
+            return true; 
         }
     }
 }

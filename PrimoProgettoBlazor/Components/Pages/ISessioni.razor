@@ -2,7 +2,7 @@
 @inject ISessioneService sessioneService
 @inject DialogService dialog
 @inject NotificationService notify
-
+@inject IMessageService messageService
 @if (inModifica == null)
 {
 	<RadzenRow>
@@ -65,31 +65,19 @@ else
 	private async Task Salva()
 	{
 		string errore = await sessioneService.SalvaSessione(inModifica);
-		MostraErrore(errore, "Inserimento riuscito");
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento riuscito", errore);
 		inModifica = null;
 		await Carica();
 	}
 
 	private async Task Elimina(Sessione quale)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa sessione?", "Eliminazione sessione", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if (result.HasValue && result.Value)
+		bool result = await messageService.ChiediConferma("Eliminazione sessione", "Sei sicuro di voler eliminare questa sessione?");
+		if (result)
 		{
 			string errore = await sessioneService.EliminaSessione(quale);
-			MostraErrore(errore, "Elinimazione riuscita!");
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Elinimazione riuscita!", errore);
 			await Carica();
-		}
-	}
-
-	private void MostraErrore(string errore, string messaggioDiRiuscita)
-	{
-		if (string.IsNullOrEmpty(errore))
-		{
-			notify.Notify(NotificationSeverity.Success, messaggioDiRiuscita);
-		}
-		else
-		{
-			notify.Notify(NotificationSeverity.Error, errore);
 		}
 	}
 }

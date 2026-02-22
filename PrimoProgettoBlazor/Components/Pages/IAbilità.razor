@@ -2,7 +2,7 @@
 @inject IAbilitàService abilitàService
 @inject DialogService dialog
 @inject NotificationService notify
-
+@inject IMessageService messageService
 @if (inModifica == null)
 {
 	<RadzenRow>
@@ -83,31 +83,19 @@ else
 	private async Task Salva()
 	{
 		string errore = await abilitàService.SalvaAbilità(inModifica);
-		MostraErrore(errore, "Inserimento riuscito");
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento riuscito", errore);
 		inModifica = null;
 		await Carica();
 	}
 
 	private async Task Elimina(Abilità quale)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa abilità?", "Eliminazione abilità", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if (result.HasValue && result.Value)
+		bool result = await messageService.ChiediConferma("Eliminazione abilità", "Sei sicuro di voler eliminare questa abilità?");
+		if (result)
 		{
 			string errore = await abilitàService.EliminaAbilità(quale);
-			MostraErrore(errore, "Elinimazione riuscita!");
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Elinimazione riuscita!", errore); 
 			await Carica();
-		}
-	}
-
-	private void MostraErrore(string errore, string messaggioDiRiuscita)
-	{
-		if (string.IsNullOrEmpty(errore))
-		{
-			notify.Notify(NotificationSeverity.Success, messaggioDiRiuscita);
-		}
-		else
-		{
-			notify.Notify(NotificationSeverity.Error, errore);
 		}
 	}
 }

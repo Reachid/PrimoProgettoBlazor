@@ -3,6 +3,7 @@
 @inject IKeywordService keywordService
 @inject DialogService dialog
 @inject NotificationService notify
+@inject IMessageService messageService
 
 @if (keyword == null)
 {
@@ -11,7 +12,7 @@
 			<RadzenDropDown Data="CategorieKeywords" Placeholder="Scegli una categoria" @bind-Value="scelta" TextProperty="@(nameof(CategoriaKeyword.Nome))" class="w-100"/>
 		</RadzenColumn>
 	</RadzenRow>
-	
+
 	if(scelta.Id != 0)
 	{
 		<ListaKeywords scelta="scelta" OnPremiDelete="Elimina" OnPremiModifica="Modifica" />
@@ -75,31 +76,20 @@ else
 	private async Task Salva()
 	{
 		string errore = await keywordService.SalvaKeyword(keyword);
-		MostraErrore(errore, "Inserimento riuscito");
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento riuscito", errore); 
 		keyword = null;
 		await Carica();
 	}
 
 	private async Task Elimina(Keyword quale)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa categoria?", "Eliminazione categoria", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if (result.HasValue && result.Value)
+
+		bool result = await messageService.ChiediConferma("Eliminazione categoria", "Sei sicuro di voler eliminare questa categoria?");
+		if (result)
 		{
 			string errore = await keywordService.EliminaKeyword(quale);
-			MostraErrore(errore, "Elinimazione riuscita!");
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Elinimazione riuscita!", errore);
 			await Carica();
-		}
-	}
-
-	private void MostraErrore(string errore, string messaggioDiRiuscita)
-	{
-		if (string.IsNullOrEmpty(errore))
-		{
-			notify.Notify(NotificationSeverity.Success, messaggioDiRiuscita);
-		}
-		else
-		{
-			notify.Notify(NotificationSeverity.Error, errore);
 		}
 	}
 }

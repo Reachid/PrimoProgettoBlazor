@@ -2,6 +2,7 @@
 @inject IGiocatoreService giocatoreService
 @inject DialogService dialog
 @inject NotificationService notify
+@inject IMessageService messageService
 @if (inModifica == null)
 {
 	<RadzenRow>
@@ -79,18 +80,19 @@ else
 		{
 			testo = "Inserimento riuscito";
 		}
-		MostraErrore(errore, testo);
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), testo, errore);
 		inModifica = null;
 		await Carica();
 	}
 
 	private async Task Elimina(Giocatore quale)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa sessione?", "Eliminazione sessione", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if (result.HasValue && result.Value)
+
+		bool result = await messageService.ChiediConferma("Eliminazione sessione", "Sei sicuro di voler eliminare questa sessione?");
+		if (result)
 		{
 			string errore = await giocatoreService.EliminaGiocatore(quale);
-			MostraErrore(errore, "Elinimazione riuscita!");
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Elinimazione riuscita!", errore);
 			await Carica();
 		}
 	}
@@ -99,17 +101,5 @@ else
 	{
 		giocatore.IsAdmin = !giocatore.IsAdmin;
 		await Salva(giocatore);
-	}
-
-	private void MostraErrore(string errore, string messaggioDiRiuscita)
-	{
-		if (string.IsNullOrEmpty(errore))
-		{
-			notify.Notify(NotificationSeverity.Success, messaggioDiRiuscita);
-		}
-		else
-		{
-			notify.Notify(NotificationSeverity.Error, errore);
-		}
 	}
 }

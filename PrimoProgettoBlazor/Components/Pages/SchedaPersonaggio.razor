@@ -2,6 +2,7 @@
 @page "/scheda/{IdPersonaggio:int}"
 @inject IPersonaggioService personaggioService
 @inject IAbilitàPersonaggioService abilitàPersonaggioService
+@inject IMessageService messageService
 
 @inject DialogService dialog
 @inject NotificationService notify
@@ -123,21 +124,18 @@
 
 	private async Task Salva()
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler salvare le modifiche al personaggio?", "Salvataggio", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if(result.HasValue)
+		bool result = await messageService.ChiediConferma("Salvataggio personaggio", "Sei sicuro di voler salvare le modifiche al personaggio?");
+		if (result)
 		{
-			if (result.Value)
+			await personaggioService.SalvaPersonaggio(personaggio);
+			if (OnReset.HasDelegate)
 			{
-				await personaggioService.SalvaPersonaggio(personaggio);
-				if (OnReset.HasDelegate)
-				{
-					await OnReset.InvokeAsync();
-				}
+				await OnReset.InvokeAsync();
 			}
-			else
-			{
-				await Close(); 
-			}
+		}
+		else
+		{
+			await Close(); 
 		}
 	}
 
@@ -151,44 +149,48 @@
 
 	private async Task EliminaAbilità(AbilitàPersonaggio quale)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa abilità?", "Eliminazione abilità", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if (result.HasValue && result.Value)
+
+		bool result = await messageService.ChiediConferma("Eliminazione abilità", "Sei sicuro di voler eliminare questa abilità?");
+		if (result)
 		{	
 			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale); 
-			if (!string.IsNullOrEmpty(errore))
+			
+			if (messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(errore), "", "Impossibile eliminare l'abilità", false))
 			{
-				notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = "Impossibile eliminare l'abilità", Duration = 3000 });
 				return; 
 			}
 			personaggio.Abilità.Remove(quale);
-			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = "Abilità eliminata!", Duration = 3000 });
+			messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(errore), "Abilità eliminata!", "Impossibile eliminare l'abilità"); 
 			await InvokeAsync(StateHasChanged); 
 		}
 	}
 
 	public async Task InserisciAbilità(AbilitàPersonaggio abilitàPersonaggio)
 	{
-		if (abilitàPersonaggio.Abilità == null || abilitàPersonaggio.Abilità.Id == 0)
+		bool condizione = abilitàPersonaggio.Abilità == null || abilitàPersonaggio.Abilità.Id == 0;
+		if (messageService.MostraMessaggioEsito(condizione, "", "Non hai ancora inserito un'abilità!", false))
 		{
-			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Warning, Summary = "Non hai ancora inserito un'abilità!" });
 			return; 
 		}
-
-		if(personaggio.Abilità.Any(x => x.Abilità.Id == abilitàPersonaggio.Abilità.Id))
+		condizione = personaggio.Abilità.Any(x => x.Abilità.Id == abilitàPersonaggio.Abilità.Id);
+		if (messageService.MostraMessaggioEsito(condizione, "", "Questa abilità esiste già!", false))
 		{
-			notify.Notify(new NotificationMessage() { Severity = NotificationSeverity.Warning, Summary = "Questa abilità esiste già!" });
 			return;
 		}
+
 		abilitàPersonaggio.Personaggio = personaggio; 
 		abilitàPersonaggio.PersonaggioId = personaggio.Id; 
 		abilitàPersonaggio.AbilitàId = abilitàPersonaggio.Abilità.Id;
 		personaggio.Abilità.Add(abilitàPersonaggio);
-		await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); 
+		
+		string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); 
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento abilità riuscito", errore); 
 
 	}
 
 	public async Task ModificaAbilità(AbilitàPersonaggio abilitàPersonaggio)
 	{
-		await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); 
+		string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); 
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Modifica abilità riuscita", errore);
 	}
 }

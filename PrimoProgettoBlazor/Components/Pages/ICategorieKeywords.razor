@@ -1,6 +1,7 @@
 ﻿@page "/CategorieKeywords"
 @inject ICategoriaKeywordService categoriaKeywordService
 @inject ISessioneService sessioneService
+@inject IMessageService messageService
 @inject DialogService dialog
 @inject NotificationService notify
 
@@ -81,31 +82,19 @@ else
 			}
 		}
 		string errore = await categoriaKeywordService.SalvaCategoriaKeyword(categoria);
-		MostraErrore(errore, "Inserimento riuscito");
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento riuscito", errore); 
 		categoria = null;
 		await Carica();
 	}
 
 	private async Task Elimina(CategoriaKeyword quale)
 	{
-		bool? result = await dialog.Confirm("Sei sicuro di voler eliminare questa categoria?", "Eliminazione categoria", new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
-		if (result.HasValue && result.Value)
+		bool result = await messageService.ChiediConferma("Eliminazione categoria", "Sei sicuro di voler eliminare questa categoria?"); 
+		if (result)
 		{
 			string errore = await categoriaKeywordService.EliminaCategoriaKeyword(quale);
-			MostraErrore(errore, "Elinimazione riuscita!");
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Elinimazione riuscita!", errore);
 			await Carica();
-		}
-	}
-
-	private void MostraErrore(string errore, string messaggioDiRiuscita)
-	{
-		if (string.IsNullOrEmpty(errore))
-		{
-			notify.Notify(NotificationSeverity.Success, messaggioDiRiuscita);
-		}
-		else
-		{
-			notify.Notify(NotificationSeverity.Error, errore);
 		}
 	}
 }

@@ -188,7 +188,7 @@
 		abilitàPersonaggio.AbilitàId = abilitàPersonaggio.Abilità.Id;
 		personaggio.Abilità.Add(abilitàPersonaggio);
 		
-		string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); 
+		string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); //Capire perché non riesco ad inserire le abilità
 		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento abilità riuscito", errore); 
 
 	}

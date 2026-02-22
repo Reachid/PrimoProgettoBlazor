@@ -24,14 +24,14 @@ namespace PrimoProgettoBlazor.Servizi.Classi
             if (condizione && mostraPositivo)
             {
                 notification.Notify(new NotificationMessage() { Severity = NotificationSeverity.Success, Summary = messaggioPositivo, Duration = 3000 });
-                return true; 
+                return false; 
             }
             else if(!condizione)
             {
                 notification.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = messaggioNegativo, Duration = 5000 });
-                return false; 
+                return true; 
             }
-            return true; 
+            return false; 
         }
     }
 }

@@ -10,10 +10,14 @@
 
 <EditForm Model="@personaggio" OnSubmit="Salva">
 	<RadzenRow>
-		<RadzenColumn Size="12">
+		<RadzenColumn Size="10">
 			<RadzenFormField Text="Nome" Variant="Variant.Outlined" class="w-100">
 				<RadzenTextBox @bind-Value="@personaggio.Nome" class="w-100" />
 			</RadzenFormField>
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenCheckBox @bind-Value="@personaggio.VisibileSoloAlMaster" Visible="@IsAdmin"/>
+			<RadzenText Text="Visibile solo al master"></RadzenText>
 		</RadzenColumn>
 	</RadzenRow>
 	<RadzenFieldset Text="Modificatori" AllowCollapse="false" class="w-100">
@@ -98,7 +102,8 @@
 	public EventCallback OnReset { get; set; }
 	[Parameter]
 	public EventCallback OnClose { get; set; }
-
+	[Parameter]
+	public bool IsAdmin { get; set; } = false; 
 
 	string titolo = "";
 
@@ -160,7 +165,7 @@
 				return; 
 			}
 			personaggio.Abilità.Remove(quale);
-			messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(errore), "Abilità eliminata!", "Impossibile eliminare l'abilità"); 
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Abilità eliminata!", "Impossibile eliminare l'abilità"); 
 			await InvokeAsync(StateHasChanged); 
 		}
 	}
@@ -168,12 +173,12 @@
 	public async Task InserisciAbilità(AbilitàPersonaggio abilitàPersonaggio)
 	{
 		bool condizione = abilitàPersonaggio.Abilità == null || abilitàPersonaggio.Abilità.Id == 0;
-		if (messageService.MostraMessaggioEsito(condizione, "", "Non hai ancora inserito un'abilità!", false))
+		if (messageService.MostraMessaggioEsito(!condizione, "", "Non hai ancora inserito un'abilità!", false))
 		{
 			return; 
 		}
 		condizione = personaggio.Abilità.Any(x => x.Abilità.Id == abilitàPersonaggio.Abilità.Id);
-		if (messageService.MostraMessaggioEsito(condizione, "", "Questa abilità esiste già!", false))
+		if (messageService.MostraMessaggioEsito(!condizione, "", "Questa abilità esiste già!", false))
 		{
 			return;
 		}

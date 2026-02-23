@@ -160,7 +160,7 @@
 		{	
 			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale); 
 			
-			if (messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(errore), "", "Impossibile eliminare l'abilità", false))
+			if (messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "", "Impossibile eliminare l'abilità", false))
 			{
 				return; 
 			}

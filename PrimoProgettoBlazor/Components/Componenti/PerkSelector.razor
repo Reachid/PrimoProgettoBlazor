@@ -39,7 +39,7 @@
 	{
 		if (OnInserisciAbilità.HasDelegate)
 		{
-			bool condizione = PerkAttacco.Perk.Id == 0; 
+			bool condizione = PerkAttacco.Perk.Id != 0; 
 			if (messageService.MostraMessaggioEsito(condizione, "", "Errore durante l'inserimento della Perk", false))
 			{
 				return;

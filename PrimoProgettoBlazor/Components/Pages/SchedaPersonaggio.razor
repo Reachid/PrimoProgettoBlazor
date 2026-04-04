@@ -16,7 +16,7 @@
 			</RadzenFormField>
 		</RadzenColumn>
 		<RadzenColumn Size="2">
-			<RadzenCheckBox @bind-Value="@personaggio.VisibileSoloAlMaster" Visible="@IsAdmin"/>
+			<RadzenCheckBox @bind-Value="@personaggio.VisibileSoloAlMaster" Visible="@IsAdmin" />
 			<RadzenText Text="Visibile solo al master"></RadzenText>
 		</RadzenColumn>
 	</RadzenRow>
@@ -71,21 +71,21 @@
 	<RadzenFieldset Text="Abilità e Debolezze" AllowCollapse="false" class="w-100">
 		<RadzenRow>
 			<RadzenColumn Size="12" SizeMD="6">
-				<SchermataAbilità Titolo="Abilità" 
-				@bind-Abilità="personaggio.Abilità" 
-				IsAbilità="true" 
-				EliminaAbilitàPersonaggio="EliminaAbilità" 
-				OnInserisciAbilità="InserisciAbilità"
-				OnModificaAbilità="ModificaAbilità" />
+				<SchermataAbilità Titolo="Abilità"
+								  @bind-Abilità="personaggio.Abilità"
+								  IsAbilità="true"
+								  EliminaAbilitàPersonaggio="EliminaAbilità"
+								  OnInserisciAbilità="InserisciAbilità"
+								  OnModificaAbilità="ModificaAbilità" />
 			</RadzenColumn>
 
 			<RadzenColumn Size="12" SizeMD="6">
-				<SchermataAbilità Titolo="Debolezze" 
-				@bind-Abilità="personaggio.Abilità" 
-				IsAbilità="false" 
-				EliminaAbilitàPersonaggio="EliminaAbilità" 
-				OnInserisciAbilità="InserisciAbilità"
-				OnModificaAbilità="ModificaAbilità" />
+				<SchermataAbilità Titolo="Debolezze"
+								  @bind-Abilità="personaggio.Abilità"
+								  IsAbilità="false"
+								  EliminaAbilitàPersonaggio="EliminaAbilità"
+								  OnInserisciAbilità="InserisciAbilità"
+								  OnModificaAbilità="ModificaAbilità" />
 			</RadzenColumn>
 		</RadzenRow>
 	</RadzenFieldset>
@@ -103,7 +103,7 @@
 	[Parameter]
 	public EventCallback OnClose { get; set; }
 	[Parameter]
-	public bool IsAdmin { get; set; } = false; 
+	public bool IsAdmin { get; set; } = false;
 
 	string titolo = "";
 
@@ -119,12 +119,12 @@
 
 	private void Edita(AbilitàPersonaggio singola)
 	{
-		singola.Modifica = true; 
+		singola.Modifica = true;
 	}
 
 	private void EsciDaEdita(AbilitàPersonaggio singola)
 	{
-		singola.Modifica = false; 
+		singola.Modifica = false;
 	}
 
 	private async Task Salva()
@@ -140,7 +140,7 @@
 		}
 		else
 		{
-			await Close(); 
+			await Close();
 		}
 	}
 
@@ -148,7 +148,7 @@
 	{
 		if (OnClose.HasDelegate)
 		{
-			await OnClose.InvokeAsync(); 
+			await OnClose.InvokeAsync();
 		}
 	}
 
@@ -157,16 +157,16 @@
 
 		bool result = await messageService.ChiediConferma("Eliminazione abilità", "Sei sicuro di voler eliminare questa abilità?");
 		if (result)
-		{	
-			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale); 
-			
+		{
+			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale);
+
 			if (messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(errore), "", "Impossibile eliminare l'abilità", false))
 			{
-				return; 
+				return;
 			}
 			personaggio.Abilità.Remove(quale);
-			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Abilità eliminata!", "Impossibile eliminare l'abilità"); 
-			await InvokeAsync(StateHasChanged); 
+			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Abilità eliminata!", "Impossibile eliminare l'abilità");
+			await InvokeAsync(StateHasChanged);
 		}
 	}
 
@@ -175,7 +175,7 @@
 		bool condizione = abilitàPersonaggio.Abilità == null || abilitàPersonaggio.Abilità.Id == 0;
 		if (messageService.MostraMessaggioEsito(!condizione, "", "Non hai ancora inserito un'abilità!", false))
 		{
-			return; 
+			return;
 		}
 		condizione = personaggio.Abilità.Any(x => x.Abilità.Id == abilitàPersonaggio.Abilità.Id);
 		if (messageService.MostraMessaggioEsito(!condizione, "", "Questa abilità esiste già!", false))
@@ -183,19 +183,19 @@
 			return;
 		}
 
-		abilitàPersonaggio.Personaggio = personaggio; 
-		abilitàPersonaggio.PersonaggioId = personaggio.Id; 
+		abilitàPersonaggio.Personaggio = personaggio;
+		abilitàPersonaggio.PersonaggioId = personaggio.Id;
 		abilitàPersonaggio.AbilitàId = abilitàPersonaggio.Abilità.Id;
 		personaggio.Abilità.Add(abilitàPersonaggio);
-		
+
 		string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); //Capire perché non riesco ad inserire le abilità
-		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento abilità riuscito", errore); 
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento abilità riuscito", errore);
 
 	}
 
 	public async Task ModificaAbilità(AbilitàPersonaggio abilitàPersonaggio)
 	{
-		string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); 
+		string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio);
 		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Modifica abilità riuscita", errore);
 	}
 }

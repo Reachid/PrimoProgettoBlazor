@@ -115,7 +115,7 @@
 	public async Task ModificaPerk(AttaccoPerk ap)
 	{
 		string result = await attaccoPerkService.SalvaAttaccoPerk(ap);
-		messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(result), "Perk modificata con successo!", result); 
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(result), "Perk modificata con successo!", result); 
 		await InvokeAsync(StateHasChanged);
 	}
 
@@ -123,19 +123,19 @@
 	{
 		a.InModifica = false;
 		string result = await PersonaggioService.ModificaAttacco(a);
-		messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(result), "Attacco modificato con successo!", result);
+		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(result), "Attacco modificato con successo!", result);
 		await InvokeAsync(StateHasChanged);
 	}
 
 	private async Task InserisciAbilità(AttaccoPerk attaccoPerk, Attacco attacco)
 	{
-		bool condizione = attaccoPerk.Perk == null || attaccoPerk.Perk.Id == 0; 
-		if (!messageService.MostraMessaggioEsito(condizione, "", "Non hai ancora inserito una perk!", false))
+		bool condizione = attaccoPerk.Perk != null && attaccoPerk.Perk.Id != 0; 
+		if (messageService.MostraMessaggioEsito(condizione, "", "Non hai ancora inserito una perk!", false))
 		{
 			return;
 		}
-		condizione = attacco.AttacchiPerks.Any(x => x.Perk.Id == attaccoPerk.Perk.Id); 
-		if (!messageService.MostraMessaggioEsito(condizione, "", "Questa perk esiste già!", false))
+		condizione = !attacco.AttacchiPerks.Any() || !attacco.AttacchiPerks.Any(x => x.Perk.Id == attaccoPerk.Perk.Id); 
+		if (messageService.MostraMessaggioEsito(condizione, "", "Questa perk esiste già!", false))
 		{
 			return;
 		}

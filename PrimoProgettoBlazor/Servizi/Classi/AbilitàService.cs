@@ -36,15 +36,24 @@ namespace PrimoProgettoBlazor.Servizi.Classi
 
         public async Task<List<Abilità>> GetAbilità()
         {
-            List<Abilità> abilità = new List<Abilità>(); 
-            using (var scope = serviceScopeFactory.CreateScope())
+            List<Abilità> abilità = new List<Abilità>();
+            try
             {
-                using(BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
+                using (var scope = serviceScopeFactory.CreateScope())
                 {
-                    abilità = await db.Abilità.ToListAsync(); 
+                    using (BancaDati db = scope.ServiceProvider.GetRequiredService<BancaDati>())
+                    {
+                        abilità = await db.Abilità.ToListAsync();
+                    }
                 }
+                return abilità;
             }
-            return abilità; 
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
         }
 
         public async Task<string> SalvaAbilità(Abilità abilità)

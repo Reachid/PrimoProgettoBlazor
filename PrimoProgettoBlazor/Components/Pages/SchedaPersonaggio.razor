@@ -160,12 +160,11 @@
 		{
 			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale);
 
-			if (messageService.MostraMessaggioEsito(!string.IsNullOrEmpty(errore), "", "Impossibile eliminare l'abilità", false))
+			if (messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Abilità eliminata!", "Impossibile eliminare l'abilità", true))
 			{
 				return;
 			}
 			personaggio.Abilità.Remove(quale);
-			messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Abilità eliminata!", "Impossibile eliminare l'abilità");
 			await InvokeAsync(StateHasChanged);
 		}
 	}

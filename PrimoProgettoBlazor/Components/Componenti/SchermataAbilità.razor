@@ -54,6 +54,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		//Ogni tanto non carica le abilità
 		AbilitàTotali = await abilitàService.GetAbilità();
 	}
 

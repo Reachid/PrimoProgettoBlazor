@@ -47,6 +47,7 @@
 		{
 			query = query.Where(args.Filter); 
 		}
+		count = query.Count();
 		if(args.Skip != null)
 		{
 			query = query.Skip(args.Skip.Value); 
@@ -59,7 +60,6 @@
 		{
 			query.Take(10); 
 		}
-		count = query.Count(); 
 		AbilitàFiltrate = query.ToList(); 
 	}
 

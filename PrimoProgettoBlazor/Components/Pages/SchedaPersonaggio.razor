@@ -157,10 +157,10 @@
 
 		bool result = await messageService.ChiediConferma("Eliminazione abilità", "Sei sicuro di voler eliminare questa abilità?");
 		if (result)
-		{
-			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale);
-
-			if (messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Abilità eliminata!", "Impossibile eliminare l'abilità", true))
+		{	
+			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale); 
+			
+			if (messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "", "Impossibile eliminare l'abilità", false))
 			{
 				return;
 			}

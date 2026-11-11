@@ -1,109 +1,145 @@
 ﻿@inject DialogService dialog
 @inject IPerkService perkService
-<RadzenPanel Text="@Titolo" AllowCollapse="@Collapsable" class="w-100 rz-pb-2">
-	<RadzenRow class="rz-pb-2" Visible="@InModifica">
-		<PerkSelector PerkTotali="@PerkTotali" Positivo="@IsAbilità" OnInserisciAbilità="InserisciAbilità" />
-	</RadzenRow>
-	@foreach (AttaccoPerk singola in Perk.Where(x => x.Perk.IsAbilità == IsAbilità))
-	{
-		<RadzenRow class="rz-pb-2">
-			<RadzenColumn Size="4">
-				<RadzenText class="w-100">@(singola.Perk.Nome + $" ({(IsAbilità ? "+" : "-")}{singola.Perk.Punteggio})")</RadzenText>
-			</RadzenColumn>
-			<RadzenColumn Size="4">
-				@if (!singola.Modifica)
-				{
-					<RadzenText class="w-100">@(singola.Punteggio * singola.Perk.Punteggio)</RadzenText>
-				}
-				else
-				{
-					<RadzenNumeric class="w-100" @bind-Value="@singola.Punteggio" />
-				}
-			</RadzenColumn>
-			<RadzenColumn Size="4">
-				<RadzenRow>
-					<RadzenColumn Size="4">
-						@if (!singola.Modifica)
-						{
-							<RadzenIcon Icon="edit" IconStyle="IconStyle.Warning" @onclick="@(x => singola.Modifica = true)" />
+@inject ContextMenuService ContextMenuService
 
-						}
-						else
-						{
-							<RadzenIcon Icon="save" IconStyle="IconStyle.Primary" @onclick="@(async x => await ModificaAbilità(singola))" />
-						}
-					</RadzenColumn>
-					<RadzenColumn Size="4">
-						<RadzenIcon Icon="menu" IconStyle="IconStyle.Primary" @onclick="@(x => VisualizzaDescrizione(singola.Perk))" />
-					</RadzenColumn>
-					<RadzenColumn Size="4">
-						<RadzenIcon Icon="delete" IconStyle="IconStyle.Danger" @onclick="@(x => EliminaAbilità(singola))" />
-					</RadzenColumn>
-				</RadzenRow>
-			</RadzenColumn>
-		</RadzenRow>
-	}
-</RadzenPanel>
+<RadzenCard Variant="Variant.Text" class="w-100 rz-pb-2">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start">
+        <RadzenText TextStyle="TextStyle.Body1">
+            <strong>@Titolo</strong>
+        </RadzenText>
+    </RadzenStack>
+    <RadzenRow class="rz-pb-2" Visible="@InModifica">
+        <PerkSelector PerkTotali="@PerkTotali" Positivo="@IsAbilità" OnInserisciAbilità="InserisciAbilità" />
+    </RadzenRow>
+    @foreach (AttaccoPerk singola in Perk.Where(x => x.Perk.IsAbilità == IsAbilità))
+    {
+        <RadzenRow AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+            <RadzenColumn Size="5">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+                    <RadzenText class="w-100">@(singola.Perk.Nome + $" ({(IsAbilità ? "+" : "-")}{singola.Perk.Punteggio})")</RadzenText>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="3">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+                    @if (!singola.Modifica)
+                    {
+                        <RadzenText class="w-100 text-center">@(singola.Punteggio* singola.Perk.Punteggio)</RadzenText>
+                    }
+                    else
+                    {
+                        <RadzenNumeric class="w-100" @bind-Value="@singola.Punteggio" />
+                    }
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="4">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+                    @if (!singola.Modifica)
+                    {
+                        <RadzenButton Variant="Variant.Text" Icon="menu" Click="x => CreateContextMenu(x,singola)" />
+                    }
+                    else
+                    {
+                        <RadzenButton Variant="Variant.Text" ButtonStyle="ButtonStyle.Success" Icon="save" Click="x => ModificaAbilità(singola)" />
+                    }
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+</RadzenCard>
 
 @code {
-	[Parameter] public string Titolo { get; set; }
-	[Parameter] public ICollection<AttaccoPerk> Perk { get; set; }
-	[Parameter] public EventCallback<ICollection<AttaccoPerk>> PerkChanged { get; set; }
-	[Parameter] public bool IsAbilità { get; set; } = true; 
-	[Parameter] public bool Collapsable { get; set; } = true; 
-	[Parameter] public bool InModifica { get; set; } = false; 
-	[Parameter] public EventCallback<AttaccoPerk> OnEliminaPerk { get; set; }
-	[Parameter] public EventCallback<AttaccoPerk> OnInserisciPerk { get; set; }
-	[Parameter] public EventCallback<AttaccoPerk> OnModificaPerk { get; set; }
+    [Parameter] public string Titolo { get; set; }
+    [Parameter] public ICollection<AttaccoPerk> Perk { get; set; }
+    [Parameter] public EventCallback<ICollection<AttaccoPerk>> PerkChanged { get; set; }
+    [Parameter] public bool IsAbilità { get; set; } = true;
+    [Parameter] public bool Collapsable { get; set; } = true;
+    [Parameter] public bool InModifica { get; set; } = false;
+    [Parameter] public EventCallback<AttaccoPerk> OnEliminaPerk { get; set; }
+    [Parameter] public EventCallback<AttaccoPerk> OnInserisciPerk { get; set; }
+    [Parameter] public EventCallback<AttaccoPerk> OnModificaPerk { get; set; }
 
-	List<Perk> PerkTotali = new List<Perk>();
+    List<Perk> PerkTotali = new List<Perk>();
 
-	protected override async Task OnInitializedAsync()
-	{
-		PerkTotali = await perkService.GetPerks();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        PerkTotali = await perkService.GetPerks();
+    }
 
-	private async Task ChangePunteggio(AttaccoPerk abilitàPersonaggio, int punteggioNuovo)
-	{
-		abilitàPersonaggio.Punteggio = punteggioNuovo; 
-		await PerkChanged.InvokeAsync(Perk); 
-	}
+    private async Task ChangePunteggio(AttaccoPerk abilitàPersonaggio, int punteggioNuovo)
+    {
+        abilitàPersonaggio.Punteggio = punteggioNuovo;
+        await PerkChanged.InvokeAsync(Perk);
+    }
 
-	private async Task VisualizzaDescrizione(Perk perk)
-	{
-		await dialog.OpenAsync<SchedaAbilità>(perk.Nome, new Dictionary<string, object>()
-		{
-			{"Abilità", perk}
-		}, new DialogOptions()
-		{
-			Width = "100vw",
-			Height = "100vh", 
-			ShowClose = true
-		});
-	}
+    private async Task VisualizzaDescrizione(Perk perk)
+    {
+        await dialog.OpenAsync<SchedaAbilità>(perk.Nome, new Dictionary<string, object>()
+        {
+            {"Abilità", perk}
+        }, new DialogOptions()
+        {
+            // Width = "100vw",
+            // Height = "100vh",
+            ShowClose = true
+        });
+    }
 
-	private async Task EliminaAbilità(AttaccoPerk quale)
-	{
-		if (OnEliminaPerk.HasDelegate)
-		{
-			await OnEliminaPerk.InvokeAsync(quale);
-		}
-	}
+    private async Task EliminaAbilità(AttaccoPerk quale)
+    {
+        if (OnEliminaPerk.HasDelegate)
+        {
+            await OnEliminaPerk.InvokeAsync(quale);
+        }
+    }
 
-	private async Task InserisciAbilità(AttaccoPerk attaccoPerk)
-	{
-		if (OnInserisciPerk.HasDelegate)
-		{
-			await OnInserisciPerk.InvokeAsync(attaccoPerk);
-		}
-	}
+    private async Task InserisciAbilità(AttaccoPerk attaccoPerk)
+    {
+        if (OnInserisciPerk.HasDelegate)
+        {
+            await OnInserisciPerk.InvokeAsync(attaccoPerk);
+        }
+    }
 
-	private async Task ModificaAbilità(AttaccoPerk attaccoPerk)
-	{
-		if (OnModificaPerk.HasDelegate)
-		{
-			attaccoPerk.Modifica = false; 
-			await OnModificaPerk.InvokeAsync(attaccoPerk);
-		}
-	}
+    private async Task ModificaAbilità(AttaccoPerk attaccoPerk)
+    {
+        if (OnModificaPerk.HasDelegate)
+        {
+            attaccoPerk.Modifica = false;
+            await OnModificaPerk.InvokeAsync(attaccoPerk);
+        }
+    }
+
+    private void CreateContextMenu(MouseEventArgs args, AttaccoPerk attaccoPerk)
+    {
+        string valore = "";
+
+        List<ContextMenuItem> items = new List<ContextMenuItem>()
+        {
+            new ContextMenuItem() { Text = "Edita", Icon = "edit", IconColor="green", Value = "Edita" },
+            new ContextMenuItem() { Text = "Espandi", Icon = "open_in_new", IconColor="blue", Value = "Espandi"},
+            new ContextMenuItem() { Text = "Elimina", Icon = "delete", IconColor="red", Value = "Elimina"}
+        };
+
+        ContextMenuService.Open(args, items, async x => await EseguiAzione(x.Value?.ToString() ?? "", attaccoPerk));
+    }
+
+    public async Task EseguiAzione(string valore, AttaccoPerk attaccoPerk)
+    {
+        if (string.IsNullOrEmpty(valore)) return;
+        switch (valore)
+        {
+            case "Edita":
+                attaccoPerk.Modifica = true;
+                await InvokeAsync(StateHasChanged);
+                break;
+            case "Espandi":
+                await VisualizzaDescrizione(attaccoPerk.Perk);
+                break;
+            case "Elimina":
+                await EliminaAbilità(attaccoPerk);
+                break;
+        }
+        ContextMenuService.Close();
+
+    }
 }

@@ -1,0 +1,12 @@
+﻿<RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+        <RadzenText Text="@Titolo" TextStyle="TextStyle.Body1" Style="font-weight:bold" />
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+        <RadzenText Text="@Numero" TextStyle="TextStyle.Body2" />
+    </RadzenStack>
+</RadzenStack>
+@code {
+    [Parameter] public string Titolo { get; set; } = "";
+    [Parameter] public string Numero { get; set; }
+}

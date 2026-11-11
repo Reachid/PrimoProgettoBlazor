@@ -9,192 +9,187 @@
 @inject NavigationManager navman
 
 <EditForm Model="@personaggio" OnSubmit="Salva">
-	<RadzenRow>
-		<RadzenColumn Size="10">
-			<RadzenFormField Text="Nome" Variant="Variant.Outlined" class="w-100">
-				<RadzenTextBox @bind-Value="@personaggio.Nome" class="w-100" />
-			</RadzenFormField>
-		</RadzenColumn>
-		<RadzenColumn Size="2">
-			<RadzenCheckBox @bind-Value="@personaggio.VisibileSoloAlMaster" Visible="@IsAdmin" />
-			<RadzenText Text="Visibile solo al master"></RadzenText>
-		</RadzenColumn>
-	</RadzenRow>
-	<RadzenFieldset Text="Modificatori" AllowCollapse="false" class="w-100">
-		<RadzenRow>
-			<RadzenColumn Size="6" SizeMD="3">
-				<RadzenFormField Text="Iniziativa" Variant="Variant.Outlined" class="w-100">
-					<RadzenTextBox @bind-Value="@personaggio.Iniziativa" class="w-100" />
-				</RadzenFormField>
-			</RadzenColumn>
-			<RadzenColumn Size="6" SizeMD="3">
-				<RadzenFormField Text="Tiro per colpire" Variant="Variant.Outlined" class="w-100">
-					<RadzenTextBox @bind-Value="@personaggio.TiroColpire" class="w-100" />
-				</RadzenFormField>
-			</RadzenColumn>
-			<RadzenColumn Size="6" SizeMD="3">
-				<RadzenFormField Text="Tiro difesa" Variant="Variant.Outlined" class="w-100">
-					<RadzenTextBox @bind-Value="@personaggio.TiroDifesa" class="w-100" />
-				</RadzenFormField>
-			</RadzenColumn>
-			<RadzenColumn Size="6" SizeMD="3">
-				<RadzenFormField Text="Modificatore attacco" Variant="Variant.Outlined" class="w-100">
-					<RadzenTextBox @bind-Value="@personaggio.ModifAttacco" class="w-100" />
-				</RadzenFormField>
-			</RadzenColumn>
-		</RadzenRow>
-	</RadzenFieldset>
-	<RadzenFieldset Text="Statistiche" AllowCollapse="false" class="w-100">
-		<RadzenRow>
-			<RadzenColumn Size="6" SizeMD="3">
-				<RadzenFormField Text="Salute" Variant="Variant.Outlined" class="w-100">
-					<RadzenNumeric @bind-Value="@personaggio.Salute" class="w-100" />
-				</RadzenFormField>
-			</RadzenColumn>
-			<RadzenColumn Size="6" SizeMD="3">
-				<RadzenFormField Text="Vigore" Variant="Variant.Outlined" class="w-100">
-					<RadzenNumeric @bind-Value="@personaggio.Vigore" class="w-100" />
-				</RadzenFormField>
-			</RadzenColumn>
-			<RadzenColumn Size="6" SizeMD="3">
-				<RadzenFormField Text="Armatura" Variant="Variant.Outlined" class="w-100">
-					<RadzenNumeric @bind-Value="@personaggio.Armatura" class="w-100" />
-				</RadzenFormField>
-			</RadzenColumn>
-			<RadzenColumn Size="6" SizeMD="3">
-				<RadzenFormField Text="Livello minaccia" Variant="Variant.Outlined" class="w-100">
-					<RadzenNumeric @bind-Value="@personaggio.LivelloMinaccia" class="w-100" />
-				</RadzenFormField>
-			</RadzenColumn>
-		</RadzenRow>
-	</RadzenFieldset>
-	<RadzenFieldset Text="Abilità e Debolezze" AllowCollapse="false" class="w-100">
-		<RadzenRow>
-			<RadzenColumn Size="12" SizeMD="6">
-				<SchermataAbilità Titolo="Abilità"
-								  @bind-Abilità="personaggio.Abilità"
-								  IsAbilità="true"
-								  EliminaAbilitàPersonaggio="EliminaAbilità"
-								  OnInserisciAbilità="InserisciAbilità"
-								  OnModificaAbilità="ModificaAbilità" />
-			</RadzenColumn>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+        <RadzenColumn Size="10">
+            <RadzenText TextStyle="TextStyle.DisplayH3" Text="@personaggio.Nome" class="w-100" />
+        </RadzenColumn>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" Variant="Variant.Text" Icon="settings" Click="ApriDialog" />
+    </RadzenStack>
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeMD="12">
+            <RadzenFieldset Text="Statistiche">
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="6">
+                        <RadzenCard class="w-100">
+                            @{
+                                Dictionary<string, string> valori = new Dictionary<string, string>()
+                                                        {
+                                                        {"Iniziativa", personaggio.Iniziativa},
+                                                        {"Tiro per colpire", personaggio.TiroColpire},
+                                                        {"Tiro difesa", personaggio.TiroDifesa},
+                                                        {"Modificatore", personaggio.ModifAttacco}
+                                                        };
+                            }
+                            <RaccoglitoreStat Size="3" SizeMD="3" Valori="@valori" />
+                        </RadzenCard>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="6">
+                        <RadzenCard class="w-100">
+                            @{
+                                Dictionary<string, string> valori = new Dictionary<string, string>()
+                                                        {
+                                                        {"Salute", personaggio.Salute.ToString()},
+                                                        {"Vigore", personaggio.Vigore.ToString()},
+                                                        {"Armatura", personaggio.Armatura.ToString()},
+                                                        {"Minaccia", personaggio.LivelloMinaccia.ToString()}
+                                                        };
+                            }
+                            <RaccoglitoreStat Size="3" SizeMD="3" Valori="@valori" />
+                        </RadzenCard>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenFieldset>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="12">
+            <RadzenFieldset Text="Abilità e Debolezze" AllowCollapse="false" class="w-100">
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <SchermataAbilità Titolo="Abilità"
+                                          @bind-Abilità="personaggio.Abilità"
+                                          IsAbilità="true"
+                                          EliminaAbilitàPersonaggio="EliminaAbilità"
+                                          OnInserisciAbilità="InserisciAbilità"
+                                          OnModificaAbilità="ModificaAbilità" />
+                    </RadzenColumn>
 
-			<RadzenColumn Size="12" SizeMD="6">
-				<SchermataAbilità Titolo="Debolezze"
-								  @bind-Abilità="personaggio.Abilità"
-								  IsAbilità="false"
-								  EliminaAbilitàPersonaggio="EliminaAbilità"
-								  OnInserisciAbilità="InserisciAbilità"
-								  OnModificaAbilità="ModificaAbilità" />
-			</RadzenColumn>
-		</RadzenRow>
-	</RadzenFieldset>
-	<RadzenFieldset Text="Attacchi" class="w-100">
-		<CollectorAttacchi personaggio="personaggio" />
-	</RadzenFieldset>
-	<RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="save" />
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <SchermataAbilità Titolo="Debolezze"
+                                          @bind-Abilità="personaggio.Abilità"
+                                          IsAbilità="false"
+                                          EliminaAbilitàPersonaggio="EliminaAbilità"
+                                          OnInserisciAbilità="InserisciAbilità"
+                                          OnModificaAbilità="ModificaAbilità" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenFieldset>
+        </RadzenColumn>
+    </RadzenRow>
+   
+    <RadzenFieldset Text="Attacchi" class="w-100">
+        <CollectorAttacchi personaggio="personaggio" />
+    </RadzenFieldset>
+    <RadzenFab Style="position:fixed;bottom:1rem;right:1rem;" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="save" />
 </EditForm>
 
 @code {
-	[Parameter]
-	public Personaggio? personaggio { get; set; } = new Personaggio();
-	[Parameter]
-	public EventCallback OnReset { get; set; }
-	[Parameter]
-	public EventCallback OnClose { get; set; }
-	[Parameter]
-	public bool IsAdmin { get; set; } = false;
+    [Parameter]
+    public Personaggio? personaggio { get; set; } = new Personaggio();
+    [Parameter]
+    public EventCallback OnReset { get; set; }
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+    [Parameter]
+    public bool IsAdmin { get; set; } = false;
 
-	string titolo = "";
+    string titolo = "";
 
-	protected override async Task OnInitializedAsync()
-	{
-		titolo = "Nuovo personaggio";
+    protected override async Task OnInitializedAsync()
+    {
+        titolo = "Nuovo personaggio";
 
-		if (personaggio.Id != 0)
-		{
-			titolo = "Modifica Personaggio";
-		}
-	}
+        if (personaggio.Id != 0)
+        {
+            titolo = "Modifica Personaggio";
+        }
+    }
 
-	private void Edita(AbilitàPersonaggio singola)
-	{
-		singola.Modifica = true;
-	}
+    private void Edita(AbilitàPersonaggio singola)
+    {
+        singola.Modifica = true;
+    }
 
-	private void EsciDaEdita(AbilitàPersonaggio singola)
-	{
-		singola.Modifica = false;
-	}
+    private void EsciDaEdita(AbilitàPersonaggio singola)
+    {
+        singola.Modifica = false;
+    }
 
-	private async Task Salva()
-	{
-		bool result = await messageService.ChiediConferma("Salvataggio personaggio", "Sei sicuro di voler salvare le modifiche al personaggio?");
-		if (result)
-		{
-			await personaggioService.SalvaPersonaggio(personaggio);
-			if (OnReset.HasDelegate)
-			{
-				await OnReset.InvokeAsync();
-			}
-		}
-		else
-		{
-			await Close();
-		}
-	}
+    private async Task Salva()
+    {
+        bool result = await messageService.ChiediConferma("Salvataggio personaggio", "Sei sicuro di voler salvare le modifiche al personaggio?");
+        if (result)
+        {
+            await personaggioService.SalvaPersonaggio(personaggio);
+            if (OnReset.HasDelegate)
+            {
+                await OnReset.InvokeAsync();
+            }
+        }
+        else
+        {
+            await Close();
+        }
+    }
 
-	private async Task Close()
-	{
-		if (OnClose.HasDelegate)
-		{
-			await OnClose.InvokeAsync();
-		}
-	}
+    private async Task Close()
+    {
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
 
-	private async Task EliminaAbilità(AbilitàPersonaggio quale)
-	{
+    private async Task EliminaAbilità(AbilitàPersonaggio quale)
+    {
 
-		bool result = await messageService.ChiediConferma("Eliminazione abilità", "Sei sicuro di voler eliminare questa abilità?");
-		if (result)
-		{	
-			string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale); 
-			
-			if (messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "", "Impossibile eliminare l'abilità", false))
-			{
-				return;
-			}
-			personaggio.Abilità.Remove(quale);
-			await InvokeAsync(StateHasChanged);
-		}
-	}
+        bool result = await messageService.ChiediConferma("Eliminazione abilità", "Sei sicuro di voler eliminare questa abilità?");
+        if (result)
+        {
+            string errore = await abilitàPersonaggioService.EliminaAbilitàPersonaggio(quale);
 
-	public async Task InserisciAbilità(AbilitàPersonaggio abilitàPersonaggio)
-	{
-		bool condizione = abilitàPersonaggio.Abilità == null || abilitàPersonaggio.Abilità.Id == 0;
-		if (messageService.MostraMessaggioEsito(!condizione, "", "Non hai ancora inserito un'abilità!", false))
-		{
-			return;
-		}
-		condizione = personaggio.Abilità.Any(x => x.Abilità.Id == abilitàPersonaggio.Abilità.Id);
-		if (messageService.MostraMessaggioEsito(!condizione, "", "Questa abilità esiste già!", false))
-		{
-			return;
-		}
+            if (messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "", "Impossibile eliminare l'abilità", false))
+            {
+                return;
+            }
+            personaggio.Abilità.Remove(quale);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
 
-		abilitàPersonaggio.Personaggio = personaggio;
-		abilitàPersonaggio.PersonaggioId = personaggio.Id;
-		abilitàPersonaggio.AbilitàId = abilitàPersonaggio.Abilità.Id;
-		personaggio.Abilità.Add(abilitàPersonaggio);
+    public async Task InserisciAbilità(AbilitàPersonaggio abilitàPersonaggio)
+    {
+        bool condizione = abilitàPersonaggio.Abilità == null || abilitàPersonaggio.Abilità.Id == 0;
+        if (messageService.MostraMessaggioEsito(!condizione, "", "Non hai ancora inserito un'abilità!", false))
+        {
+            return;
+        }
+        condizione = personaggio.Abilità.Any(x => x.Abilità.Id == abilitàPersonaggio.Abilità.Id);
+        if (messageService.MostraMessaggioEsito(!condizione, "", "Questa abilità esiste già!", false))
+        {
+            return;
+        }
 
-		string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); //Capire perché non riesco ad inserire le abilità
-		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento abilità riuscito", errore);
+        abilitàPersonaggio.Personaggio = personaggio;
+        abilitàPersonaggio.PersonaggioId = personaggio.Id;
+        abilitàPersonaggio.AbilitàId = abilitàPersonaggio.Abilità.Id;
+        personaggio.Abilità.Add(abilitàPersonaggio);
 
-	}
+        string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio); //Capire perché non riesco ad inserire le abilità
+        messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Inserimento abilità riuscito", errore);
 
-	public async Task ModificaAbilità(AbilitàPersonaggio abilitàPersonaggio)
-	{
-		string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio);
-		messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Modifica abilità riuscita", errore);
-	}
+    }
+
+    public async Task ModificaAbilità(AbilitàPersonaggio abilitàPersonaggio)
+    {
+        string errore = await abilitàPersonaggioService.SalvaAbilitàPersonaggio(abilitàPersonaggio);
+        messageService.MostraMessaggioEsito(string.IsNullOrEmpty(errore), "Modifica abilità riuscita", errore);
+    }
+
+    public async Task ApriDialog()
+    {
+        Dictionary<string, object> valori = new Dictionary<string, object>()
+        {
+            {"personaggio", personaggio}
+        };
+        await dialog.OpenAsync<DialogImpostazioniPersonaggio>("Impostazioni personaggio", valori);
+    }
 }

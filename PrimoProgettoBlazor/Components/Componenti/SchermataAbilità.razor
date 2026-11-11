@@ -1,6 +1,11 @@
 ﻿@inject DialogService dialog
 @inject IAbilitàService abilitàService
-<RadzenPanel Text="@Titolo" AllowCollapse="@Collapsable" class="w-100">
+<RadzenCard Text="@Titolo" class="w-100">
+	<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+		<RadzenText TextStyle="TextStyle.Body1">
+			<strong>@Titolo</strong>
+		</RadzenText>
+	</RadzenStack>
 	<RadzenRow class="rz-pb-2">
 		<AbilitàSelector Positivo="@IsAbilità" AbilitàTotali="AbilitàTotali" OnInserisciAbilità="InserisciAbilità" />
 	</RadzenRow>
@@ -38,7 +43,7 @@
 			</RadzenColumn>
 		</RadzenRow>
 	}
-</RadzenPanel>
+</RadzenCard>
 
 @code {
 	[Parameter] public string Titolo { get; set; }

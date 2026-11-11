@@ -1,0 +1,9 @@
+﻿<RadzenStack Orientation="Orientation.Vertical">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+        <RadzenText TextStyle="TextStyle.Body1" Text="Visibile solo al master" />
+        <RadzenSwitch @bind-Value="@personaggio.VisibileSoloAlMaster" />
+    </RadzenStack>
+</RadzenStack>
+@code {
+    [Parameter] public Personaggio personaggio { get; set; }
+}

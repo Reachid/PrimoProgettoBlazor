@@ -1,0 +1,13 @@
+﻿<RadzenRow>
+    @foreach (var valore in Valori)
+    {
+        <RadzenColumn Size="@Size" SizeMD="@SizeMD">
+            <NumberField Numero="@valore.Value" Titolo="@valore.Key" />
+        </RadzenColumn>
+    }
+</RadzenRow>
+@code {
+    [Parameter] public Dictionary<string, string> Valori { get; set; } = new Dictionary<string, string>();
+    [Parameter] public int Size { get; set; } = 3;
+    [Parameter] public int SizeMD { get; set; } = 3;
+}
